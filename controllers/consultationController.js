@@ -1,5 +1,24 @@
 const Consultation = require('../models/Consultation');
 
+exports.showDashboard = async (req, res) => {
+  try {
+    const user = req.session.user;
+    const metrics = await Consultation.getMetrics(user.id, user.role);
+    let records = [];
+
+    if (user.role === 'student') {
+      records = await Consultation.getByStudent(user.id);
+    } else {
+      records = await Consultation.getByFaculty(user.id);
+    }
+
+    res.render('dashboard/index', { user, metrics, records });
+  } catch (err) {
+    console.error('Error loading dashboard:', err.message);
+    res.status(500).send('Internal Server Error loading dashboard.');
+  }
+};
+
 exports.bookConsultation = async (req, res) => {
   try {
     const { faculty_id, consultation_date, time_slot, subject_code, topic_agenda } = req.body;
@@ -40,6 +59,21 @@ exports.showLedger = async (req, res) => {
   } catch (err) {
     console.error('Error fetching consultation records:', err.message);
     res.status(500).send('Failed to load consultation records.');
+  }
+};
+
+exports.updateStatus = async (req, res) => {
+  try {
+    const { consultation_id, status, faculty_notes } = req.body;
+    if (!consultation_id || !status) {
+      return res.status(400).send('Consultation ID and status are required.');
+    }
+
+    await Consultation.updateStatus(consultation_id, status, faculty_notes);
+    res.redirect('/dashboard');
+  } catch (err) {
+    console.error('Error updating status:', err.message);
+    res.status(500).send('Failed to update consultation status.');
   }
 };
 

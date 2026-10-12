@@ -3,8 +3,10 @@ const router = express.Router();
 const consultationController = require('../controllers/consultationController');
 const { requireAuth } = require('../middleware/auth');
 
+router.get('/dashboard', requireAuth, consultationController.showDashboard);
 router.post('/consultations/book', requireAuth, consultationController.bookConsultation);
 router.get('/consultations', requireAuth, consultationController.showLedger);
+router.post('/consultations/status', requireAuth, consultationController.updateStatus);
 router.get('/consultations/slip/:ref', requireAuth, consultationController.showPrintSlip);
 
 module.exports = router;

@@ -58,6 +58,42 @@ class Consultation {
     const [rows] = await db.query(sql, [reference_no]);
     return rows[0] || null;
   }
+
+  static async updateStatus(id, status, faculty_notes) {
+    const sql = `UPDATE consultations SET status = ?, faculty_notes = ? WHERE id = ?`;
+    await db.query(sql, [status, faculty_notes || null, id]);
+  }
+
+  static async getMetrics(userId, role) {
+    let whereClause = '';
+    let params = [];
+    if (role === 'student') {
+      whereClause = 'WHERE student_id = ?';
+      params = [userId];
+    } else if (role === 'faculty') {
+      whereClause = 'WHERE faculty_id = ?';
+      params = [userId];
+    }
+
+    const sql = `
+      SELECT 
+        COUNT(*) AS total,
+        SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending,
+        SUM(CASE WHEN status = 'confirmed' THEN 1 ELSE 0 END) AS confirmed,
+        SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS completed,
+        SUM(CASE WHEN status = 'cancelled' OR status = 'rejected' THEN 1 ELSE 0 END) AS cancelled
+      FROM consultations ${whereClause}
+    `;
+    const [rows] = await db.query(sql, params);
+    const m = rows[0] || {};
+    return {
+      total: Number(m.total || 0),
+      pending: Number(m.pending || 0),
+      confirmed: Number(m.confirmed || 0),
+      completed: Number(m.completed || 0),
+      cancelled: Number(m.cancelled || 0)
+    };
+  }
 }
 
 module.exports = Consultation;
