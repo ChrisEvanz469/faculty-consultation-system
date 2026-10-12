@@ -6,6 +6,7 @@ require('dotenv').config();
 const db = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const facultyRoutes = require('./routes/facultyRoutes');
+const consultationRoutes = require('./routes/consultationRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,10 +27,11 @@ app.use(session({
 
 app.use('/', authRoutes);
 app.use('/', facultyRoutes);
+app.use('/', consultationRoutes);
 
 app.get('/dashboard', (req, res) => {
   if (!req.session.user) return res.redirect('/login');
-  res.redirect('/faculty');
+  res.redirect('/consultations');
 });
 
 app.get('/', (req, res) => res.redirect('/login'));
