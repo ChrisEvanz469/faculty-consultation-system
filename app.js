@@ -29,11 +29,6 @@ app.use('/', authRoutes);
 app.use('/', facultyRoutes);
 app.use('/', consultationRoutes);
 
-app.get('/dashboard', (req, res) => {
-  if (!req.session.user) return res.redirect('/login');
-  res.redirect('/consultations');
-});
-
 app.get('/', (req, res) => res.redirect('/login'));
 
 db.query('SELECT 1')
