@@ -1,0 +1,8 @@
+const express = require('express');
+const router = express.Router();
+const facultyController = require('../controllers/facultyController');
+const { requireAuth } = require('../middleware/auth');
+
+router.get('/faculty', requireAuth, facultyController.showDirectory);
+
+module.exports = router;
