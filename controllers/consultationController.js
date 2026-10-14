@@ -1,4 +1,5 @@
 const Consultation = require('../models/Consultation');
+const Review = require('../models/Review');
 
 exports.showDashboard = async (req, res) => {
   try {
@@ -74,6 +75,30 @@ exports.updateStatus = async (req, res) => {
   } catch (err) {
     console.error('Error updating status:', err.message);
     res.status(500).send('Failed to update consultation status.');
+  }
+};
+
+exports.submitReview = async (req, res) => {
+  try {
+    const { consultation_id, faculty_id, rating, comment } = req.body;
+    const student_id = req.session.user.id;
+
+    if (!consultation_id || !faculty_id || !rating) {
+      return res.status(400).send('Consultation ID, Faculty ID, and Rating are required.');
+    }
+
+    await Review.create({
+      consultation_id,
+      faculty_id,
+      student_id,
+      rating: parseInt(rating, 10),
+      comment: comment || ''
+    });
+
+    res.redirect('/consultations');
+  } catch (err) {
+    console.error('Error submitting review:', err.message);
+    res.status(500).send('Failed to submit consultation review.');
   }
 };
 
