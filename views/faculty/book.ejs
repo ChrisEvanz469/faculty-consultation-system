@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Consultation - <%= f.full_name %></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; color: #1e293b; }
+    .role-badge { font-size: 0.68rem; letter-spacing: 0.8px; font-weight: 800; padding: 4px 8px; border-radius: 6px; }
+    
+    /* Left Profile Card */
+    .profile-card { background: white; border-radius: 14px; border: 1px solid #e2e8f0; padding: 25px; }
+    .avatar-large {
+      width: 72px; height: 72px; border-radius: 50%; background-color: #0284c7; color: white;
+      display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 700;
+      margin: 0 auto 15px auto;
+    }
+    .next-box-profile {
+      background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-top: 15px; text-align: center;
+    }
+
+    /* Right Calendar Card */
+    .calendar-card { background: white; border-radius: 14px; border: 1px solid #e2e8f0; padding: 25px; }
+    .calendar-grid {
+      display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; margin-top: 15px;
+    }
+    .calendar-day-header { font-size: 0.75rem; font-weight: 700; color: #64748b; padding-bottom: 8px; text-transform: uppercase; }
+    .calendar-cell {
+      height: 52px; display: flex; align-items: center; justify-content: center;
+      border-radius: 8px; font-weight: 600; font-size: 0.95rem; border: 1px solid transparent;
+      user-select: none;
+    }
+    .cell-disabled { color: #cbd5e1; cursor: not-allowed; }
+    .cell-today { border: 2px solid #0284c7 !important; }
+    .cell-available {
+      background-color: #10b981 !important; color: white !important; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .cell-available:hover { transform: scale(1.06); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
+    .cell-selected {
+      outline: 3px solid #0f172a; outline-offset: 2px;
+    }
+
+    /* Slot Pills */
+    .slots-container {
+      background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 20px; margin-top: 25px;
+    }
+    .slot-item {
+      background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 16px;
+      margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; transition: border-color 0.2s, background-color 0.2s;
+    }
+    .slot-item:hover { border-color: #10b981; background-color: #fcfdfd; }
+    .slot-item.selected {
+      border-color: #10b981; background-color: #ecfdf5; box-shadow: 0 0 0 1px #10b981;
+    }
+    .slot-badge-available {
+      background-color: #d1fae5; color: #065f46; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px;
+    }
+    .slot-item.disabled {
+      background: #f8fafc; color: #94a3b8; cursor: not-allowed; border-color: #e2e8f0;
+    }
+    .slot-badge-booked {
+      background-color: #fee2e2; color: #991b1b; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Standardized Locked Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold d-flex align-items-center" href="/dashboard">
+        <i class="bi bi-calendar2-check-fill me-2 fs-5"></i> Faculty Consultation Portal
+      </a>
+      <div class="d-flex align-items-center gap-2">
+        <a href="/dashboard" class="btn btn-outline-light btn-sm"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
+        <a href="/faculty" class="btn btn-light btn-sm text-primary fw-semibold"><i class="bi bi-search me-1"></i> Directory</a>
+        <a href="/consultations" class="btn btn-outline-light btn-sm"><i class="bi bi-journal-text me-1"></i> Appointments</a>
+        
+        <div class="vr bg-white mx-2" style="height: 22px; opacity: 0.35;"></div>
+        
+        <div class="d-flex align-items-center bg-white bg-opacity-10 border border-white border-opacity-25 rounded-pill px-3 py-1 me-1">
+          <i class="bi bi-person-circle text-white me-2 fs-6"></i>
+          <span class="text-white fw-semibold small me-2"><%= user.full_name %></span>
+          <span class="badge <%= user.role === 'faculty' ? 'bg-warning text-dark' : 'bg-white text-primary' %> text-uppercase role-badge">
+            <%= user.role %>
+          </span>
+        </div>
+
+        <a href="/logout" class="btn btn-outline-light btn-sm" title="Logout"><i class="bi bi-box-arrow-right"></i></a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container my-4">
+    <div class="mb-3">
+      <a href="/faculty" class="text-decoration-none text-muted small">
+        <i class="bi bi-arrow-left me-1"></i> Back to Faculty Directory
+      </a>
+    </div>
+
+    <div class="row g-4">
+      <!-- Left Column: Instructor Profile Details -->
+      <div class="col-lg-4">
+        <div class="profile-card text-center">
+          <% 
+            const initials = (f.full_name || 'Prof')
+              .replace(/^(Engr\.|Dr\.|Prof\.)\s*/i, '')
+              .split(' ')
+              .slice(0, 2)
+              .map(n => n[0])
+              .join('');
+          %>
+          <div class="avatar-large">
+            <%= initials %>
+          </div>
+          <h5 class="fw-bold text-dark mb-1"><%= f.full_name %></h5>
+          <div class="text-muted small mb-3">Instructor / Faculty</div>
+
+          <div class="text-start small text-muted border-top pt-3">
+            <div class="mb-2"><i class="bi bi-building me-2 text-primary"></i> <%= f.department || 'College of Computer Studies' %></div>
+            <div class="mb-2"><i class="bi bi-geo-alt me-2 text-primary"></i> <%= f.office_location || 'CCS Faculty Lounge' %></div>
+            <div class="mb-2"><i class="bi bi-envelope me-2 text-primary"></i> <%= f.email %></div>
+            <% if (f.meeting_link) { %>
+              <div class="mb-2"><i class="bi bi-camera-video me-2 text-primary"></i> <a href="<%= f.meeting_link %>" target="_blank" class="text-decoration-none">Online Meeting Link</a></div>
+            <% } %>
+          </div>
+
+          <div class="next-box-profile">
+            <div class="text-muted small text-uppercase fw-bold" style="font-size: 0.7rem;">Next Available Duty</div>
+            <div class="fw-bold text-primary"><%= f.next_available %></div>
+          </div>
+
+          <div class="mt-3 text-start small border-top pt-2">
+            <div class="fw-bold text-dark mb-1">Weekly Consultation Days:</div>
+            <% if (f.slots && f.slots.length > 0) { %>
+              <% f.slots.forEach(s => { %>
+                <div class="badge bg-light text-dark border me-1 mb-1">
+                  <i class="bi bi-clock me-1"></i> <%= s.day_of_week %> (<%= s.start_time %> - <%= s.end_time %>)
+                </div>
+              <% }) %>
+            <% } else { %>
+              <div class="text-muted">No scheduled slots configured.</div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Interactive Calendar Grid -->
+      <div class="col-lg-8">
+        <div class="calendar-card">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-dark mb-0" id="calendarMonthTitle">October 2026</h5>
+            <div class="small text-muted">
+              <span class="badge bg-success-subtle text-success border border-success-subtle me-1">Green</span> Available consultation days
+            </div>
+          </div>
+
+          <div class="calendar-grid">
+            <div class="calendar-day-header">Sun</div>
+            <div class="calendar-day-header">Mon</div>
+            <div class="calendar-day-header">Tue</div>
+            <div class="calendar-day-header">Wed</div>
+            <div class="calendar-day-header">Thu</div>
+            <div class="calendar-day-header">Fri</div>
+            <div class="calendar-day-header">Sat</div>
+            <div id="calendarDaysContainer" style="display: contents;"></div>
+          </div>
+
+          <div class="d-flex flex-wrap gap-3 mt-4 pt-3 border-top small text-muted justify-content-center">
+            <div class="d-flex align-items-center gap-1">
+              <span class="badge p-1 bg-success rounded-circle" style="width: 10px; height: 10px;"> </span>
+              <span>Available consultation day</span>
+            </div>
+            <div class="d-flex align-items-center gap-1">
+              <span class="badge p-1 bg-danger rounded-circle" style="width: 10px; height: 10px;"> </span>
+              <span>Instructor unavailable this day</span>
+            </div>
+            <div class="d-flex align-items-center gap-1">
+              <span class="border border-2 border-primary rounded" style="width: 12px; height: 12px;"> </span>
+              <span>Today</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slot Selection Section -->
+        <div id="slotsSection" class="slots-container d-none">
+          <h6 class="fw-bold text-dark mb-3" id="selectedDateHeading">
+            Select a Slot
+          </h6>
+
+          <div id="slotsList"></div>
+
+          <!-- Booking Submission Form -->
+          <form id="bookingSubmissionForm" action="/consultations/book" method="POST" class="mt-4 pt-3 border-top d-none">
+            <input type="hidden" name="faculty_id" value="<%= f.id %>">
+            <input type="hidden" name="consultation_date" id="formConsultationDate">
+            <input type="hidden" name="time_slot" id="formTimeSlot">
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-5">
+                <label class="form-label small fw-semibold">Subject / Course Code</label>
+                <input type="text" name="subject_code" class="form-control form-control-sm" placeholder="e.g., IT 312, CC 106">
+              </div>
+              <div class="col-md-7">
+                <label class="form-label small fw-semibold">Consultation Concern / Agenda <span class="text-danger">*</span></label>
+                <input type="text" name="topic_agenda" class="form-control form-control-sm" placeholder="Brief description of consultation topic..." required>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="small fw-semibold text-dark">
+                Selected: <span id="selectedSlotSummary" class="text-primary font-monospace">None</span>
+              </div>
+              <button type="submit" class="btn btn-primary fw-semibold px-4">
+                <i class="bi bi-calendar-check me-1"></i> Book Appointment
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const facultyDutyDays = <%- JSON.stringify((f.slots || []).map(s => s.day_of_week)) %>;
+    const bookedConsultations = <%- bookedConsultations %>;
+
+    const calendarContainer = document.getElementById('calendarDaysContainer');
+    const slotsSection = document.getElementById('slotsSection');
+    const selectedDateHeading = document.getElementById('selectedDateHeading');
+    const slotsList = document.getElementById('slotsList');
+    const bookingForm = document.getElementById('bookingSubmissionForm');
+    const formDate = document.getElementById('formConsultationDate');
+    const formTimeSlot = document.getElementById('formTimeSlot');
+    const selectedSlotSummary = document.getElementById('selectedSlotSummary');
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    
+    document.getElementById('calendarMonthTitle').textContent = today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+    for (let i = 0; i < firstDayIndex; i++) {
+      const emptyCell = document.createElement('div');
+      emptyCell.className = 'calendar-cell cell-disabled';
+      calendarContainer.appendChild(emptyCell);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const cellDate = new Date(year, month, day);
+      const dayOfWeekStr = weekdays[cellDate.getDay()];
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+      const cell = document.createElement('div');
+      cell.className = 'calendar-cell';
+      cell.textContent = day;
+
+      const isToday = (today.getFullYear() === year && today.getMonth() === month && today.getDate() === day);
+      if (isToday) cell.classList.add('cell-today');
+
+      const isDutyDay = facultyDutyDays.includes(dayOfWeekStr);
+
+      if (isDutyDay) {
+        cell.classList.add('cell-available');
+        cell.title = `${dayOfWeekStr} — Available`;
+        cell.addEventListener('click', () => selectCalendarDate(cell, dateStr, dayOfWeekStr, day));
+      } else {
+        cell.classList.add('cell-disabled');
+      }
+
+      calendarContainer.appendChild(cell);
+    }
+
+    const availableSlotsTemplates = [
+      '09:00 AM - 10:30 AM',
+      '10:30 AM - 12:00 PM',
+      '01:00 PM - 02:30 PM',
+      '02:30 PM - 04:00 PM'
+    ];
+
+    function selectCalendarDate(cell, dateStr, dayOfWeekStr, day) {
+      document.querySelectorAll('.cell-available').forEach(c => c.classList.remove('cell-selected'));
+      cell.classList.add('cell-selected');
+
+      slotsSection.classList.remove('d-none');
+      selectedDateHeading.textContent = `${dayOfWeekStr}, ${dateStr} — Select a Slot`;
+      formDate.value = dateStr;
+
+      const bookingsOnDate = bookedConsultations.filter(c => {
+        const cDate = new Date(c.consultation_date).toISOString().split('T')[0];
+        return cDate === dateStr && (c.status === 'pending' || c.status === 'confirmed');
+      });
+      const bookedSlotTimes = bookingsOnDate.map(c => c.time_slot);
+
+      slotsList.innerHTML = '';
+      bookingForm.classList.add('d-none');
+      formTimeSlot.value = '';
+
+      availableSlotsTemplates.forEach((slotTime, index) => {
+        const isBooked = bookedSlotTimes.includes(slotTime);
+        const item = document.createElement('div');
+        item.className = 'slot-item' + (isBooked ? ' disabled' : '');
+
+        item.innerHTML = `
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge ${isBooked ? 'bg-secondary' : 'bg-success'} rounded-circle px-2">${index + 1}</span>
+            <span class="fw-semibold">${slotTime}</span>
+          </div>
+          <span class="${isBooked ? 'slot-badge-booked' : 'slot-badge-available'}">
+            ${isBooked ? 'Booked' : 'Available'}
+          </span>
+        `;
+
+        if (!isBooked) {
+          item.addEventListener('click', () => {
+            document.querySelectorAll('.slot-item').forEach(el => el.classList.remove('selected'));
+            item.classList.add('selected');
+            formTimeSlot.value = slotTime;
+            selectedSlotSummary.textContent = `${slotTime} (${dateStr})`;
+            bookingForm.classList.remove('d-none');
+          });
+        }
+
+        slotsList.appendChild(item);
+      });
+
+      slotsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
