@@ -1,4 +1,4 @@
-const db = require('../config/db');
+﻿const db = require('../config/db');
 
 class Consultation {
   static async create({ student_id, faculty_id, consultation_date, time_slot, subject_code, topic_agenda }) {
@@ -12,6 +12,30 @@ class Consultation {
     `;
     await db.query(sql, [reference_no, student_id, faculty_id, consultation_date, time_slot, subject_code, topic_agenda]);
     return reference_no;
+  }
+
+  static async checkSlotConflict(faculty_id, consultation_date, time_slot) {
+    const sql = `
+      SELECT id FROM consultations 
+      WHERE faculty_id = ? 
+        AND consultation_date = ? 
+        AND time_slot = ? 
+        AND status IN ('pending', 'confirmed')
+      LIMIT 1
+    `;
+    const [rows] = await db.query(sql, [faculty_id, consultation_date, time_slot]);
+    return rows.length > 0;
+  }
+
+  static async getBookedSlots(faculty_id, consultation_date) {
+    const sql = `
+      SELECT time_slot FROM consultations
+      WHERE faculty_id = ?
+        AND consultation_date = ?
+        AND status IN ('pending', 'confirmed')
+    `;
+    const [rows] = await db.query(sql, [faculty_id, consultation_date]);
+    return rows.map(r => r.time_slot);
   }
 
   static async getByStudent(student_id) {

@@ -1,4 +1,4 @@
-const Consultation = require('../models/Consultation');
+﻿const Consultation = require('../models/Consultation');
 const Review = require('../models/Review');
 
 exports.showDashboard = async (req, res) => {
@@ -20,13 +20,33 @@ exports.showDashboard = async (req, res) => {
   }
 };
 
+exports.checkBookedSlots = async (req, res) => {
+  try {
+    const { faculty_id, date } = req.query;
+    if (!faculty_id || !date) {
+      return res.json({ bookedSlots: [] });
+    }
+    const bookedSlots = await Consultation.getBookedSlots(faculty_id, date);
+    res.json({ bookedSlots });
+  } catch (err) {
+    console.error('Error checking booked slots:', err.message);
+    res.status(500).json({ error: 'Failed to verify slot availability' });
+  }
+};
+
 exports.bookConsultation = async (req, res) => {
   try {
     const { faculty_id, consultation_date, time_slot, subject_code, topic_agenda } = req.body;
     const student_id = req.session.user.id;
 
     if (!faculty_id || !consultation_date || !time_slot || !topic_agenda) {
-      return res.status(400).send('Please fill in all required fields.');
+      return res.redirect('/faculty?error=missing_fields');
+    }
+
+    // Backend conflict check safeguard
+    const isConflict = await Consultation.checkSlotConflict(faculty_id, consultation_date, time_slot);
+    if (isConflict) {
+      return res.redirect('/faculty?error=conflict');
     }
 
     await Consultation.create({
@@ -41,7 +61,7 @@ exports.bookConsultation = async (req, res) => {
     res.redirect('/consultations');
   } catch (err) {
     console.error('Error booking consultation:', err.message);
-    res.status(500).send('Failed to schedule consultation.');
+    res.redirect('/faculty?error=server_error');
   }
 };
 
