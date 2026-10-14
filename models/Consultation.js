@@ -18,10 +18,12 @@ class Consultation {
     const sql = `
       SELECT c.*, 
              u.full_name AS faculty_name, u.email AS faculty_email, u.department AS faculty_dept,
-             fp.office_location, fp.consultation_mode
+             fp.office_location, fp.consultation_mode,
+             cr.id AS review_id, cr.rating AS review_rating, cr.comment AS review_comment
       FROM consultations c
       JOIN users u ON c.faculty_id = u.id
       LEFT JOIN faculty_profiles fp ON u.id = fp.user_id
+      LEFT JOIN consultation_reviews cr ON c.id = cr.consultation_id
       WHERE c.student_id = ?
       ORDER BY c.created_at DESC
     `;
@@ -32,9 +34,11 @@ class Consultation {
   static async getByFaculty(faculty_id) {
     const sql = `
       SELECT c.*, 
-             s.full_name AS student_name, s.id_number AS student_id_no, s.email AS student_email, s.department AS student_dept
+             s.full_name AS student_name, s.id_number AS student_id_no, s.email AS student_email, s.department AS student_dept,
+             cr.rating AS review_rating, cr.comment AS review_comment
       FROM consultations c
       JOIN users s ON c.student_id = s.id
+      LEFT JOIN consultation_reviews cr ON c.id = cr.consultation_id
       WHERE c.faculty_id = ?
       ORDER BY c.created_at DESC
     `;

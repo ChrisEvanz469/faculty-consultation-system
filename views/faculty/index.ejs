@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -11,17 +11,33 @@
     .faculty-card { transition: transform 0.2s, box-shadow 0.2s; border-radius: 12px; }
     .faculty-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
     .mode-badge { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+    .role-badge { font-size: 0.68rem; letter-spacing: 0.8px; font-weight: 800; padding: 4px 8px; border-radius: 6px; }
   </style>
 </head>
 <body>
+  <!-- Standardized Locked Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
     <div class="container">
-      <a class="navbar-brand fw-bold d-flex align-items-center" href="/faculty">
+      <a class="navbar-brand fw-bold d-flex align-items-center" href="/dashboard">
         <i class="bi bi-calendar2-check-fill me-2 fs-5"></i> Faculty Consultation Portal
       </a>
-      <div class="d-flex align-items-center text-white gap-3">
-        <span class="small"><i class="bi bi-person-circle me-1"></i> <%= user.full_name %> (<span class="badge bg-light text-primary"><%= user.role %></span>)</span>
-        <a href="/logout" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Logout</a>
+      <div class="d-flex align-items-center gap-2">
+        <a href="/dashboard" class="btn btn-outline-light btn-sm"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
+        <a href="/faculty" class="btn btn-light btn-sm text-primary fw-semibold"><i class="bi bi-search me-1"></i> Directory</a>
+        <a href="/consultations" class="btn btn-outline-light btn-sm"><i class="bi bi-journal-text me-1"></i> Appointments</a>
+        
+        <div class="vr bg-white mx-2" style="height: 22px; opacity: 0.35;"></div>
+        
+        <!-- User Badge Capsule -->
+        <div class="d-flex align-items-center bg-white bg-opacity-10 border border-white border-opacity-25 rounded-pill px-3 py-1 me-1">
+          <i class="bi bi-person-circle text-white me-2 fs-6"></i>
+          <span class="text-white fw-semibold small me-2"><%= user.full_name %></span>
+          <span class="badge <%= user.role === 'faculty' ? 'bg-warning text-dark' : 'bg-white text-primary' %> text-uppercase role-badge">
+            <%= user.role %>
+          </span>
+        </div>
+
+        <a href="/logout" class="btn btn-outline-light btn-sm" title="Logout"><i class="bi bi-box-arrow-right"></i></a>
       </div>
     </div>
   </nav>
@@ -77,8 +93,21 @@
             </div>
             
             <h5 class="fw-bold text-dark mb-1"><%= f.full_name %></h5>
-            <p class="text-primary small fw-semibold mb-2"><%= f.department || 'College of Computer Studies' %></p>
+            <p class="text-primary small fw-semibold mb-1"><%= f.department || 'College of Computer Studies' %></p>
             
+            <div class="mb-3">
+              <% if (f.review_count > 0) { %>
+                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle py-1 px-2">
+                  <i class="bi bi-star-fill text-warning me-1"></i><strong><%= f.avg_rating %></strong> / 5.0
+                  <span class="text-muted fw-normal ms-1">(<%= f.review_count %> <%= f.review_count === 1 ? 'review' : 'reviews' %>)</span>
+                </span>
+              <% } else { %>
+                <span class="badge bg-light text-muted border py-1 px-2">
+                  <i class="bi bi-star me-1 text-secondary"></i>No ratings yet
+                </span>
+              <% } %>
+            </div>
+
             <div class="small text-muted mb-3">
               <div class="mb-1"><i class="bi bi-building me-1"></i> <strong>Office:</strong> <%= f.office_location || 'CCS Faculty Room' %></div>
               <div><i class="bi bi-envelope me-1"></i> <strong>Email:</strong> <%= f.email %></div>
@@ -103,7 +132,6 @@
       <% }); %>
     </div>
 
-    <!-- Empty Search State -->
     <div id="noMatchState" class="text-center py-5 d-none text-muted">
       <i class="bi bi-search fs-1 d-block mb-2 text-secondary"></i>
       <h5>No matching faculty found</h5>
