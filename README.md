@@ -7,7 +7,7 @@ An academic scheduling portal designed for Camarines Sur Polytechnic Colleges (C
 - Cris Ivan M. Nual: System Architecture, Database Schema, Authentication, Session Management
 - Jasmine Baldoza: Faculty Directory, Client-side Search, Instructor Booking Profiles
 - April Peñones: Consultation Records Ledger, Printable Attendance Slips, Slot Conflict Safeguards
-- Kyle Martirez: Analytics Dashboard, Schedule Matrix View, In-App Notifications, Office Hours Management
+- Kyle Daniel F. Martirez: Analytics Dashboard, Schedule Matrix View, In-App Notifications, Office Hours Management
 
 ## Technology Stack
 
