@@ -1,94 +1,86 @@
-\# Faculty Consultation Booking System
+﻿# Faculty Consultation Booking System
 
+An academic scheduling portal designed for Camarines Sur Polytechnic Colleges (CSPC) to manage instructor consultation hours, handle appointment bookings, and verify attendance records.
 
+## Project Contributors
 
-An academic scheduling portal developed for Camarines Sur Polytechnic Colleges (CSPC) to streamline office consultation hours, student booking intake, and official consultation record verification.
+- Cris Ivan M. Nual: System Architecture, Database Schema, Authentication, Session Management
+- Jasmine Baldoza: Faculty Directory, Client-side Search, Instructor Booking Profiles
+- April Peñones: Consultation Records Ledger, Printable Attendance Slips, Slot Conflict Safeguards
+- Kyle Martirez: Analytics Dashboard, Schedule Matrix View, In-App Notifications, Office Hours Management
 
+## Technology Stack
 
+- Runtime Environment: Node.js
+- Web Framework: Express.js
+- Database: MySQL 8.x with connection pooling (mysql2)
+- Template Engine: EJS (Embedded JavaScript)
+- User Interface: Bootstrap 5.3 and Bootstrap Icons
+- Security: bcryptjs password hashing and express-session state management
+- Version Control: Git and GitHub Projects
 
-\---
+## System Features
 
+Student Portal:
+- Account Registration: Student self-registration with institutional ID validation.
+- Faculty Directory: Real-time search by name, department, or office room.
+- Schedule Calendar: Interactive monthly calendar displaying instructor availability.
+- Conflict Prevention: Automatic verification preventing duplicate or overlapping bookings.
+- Records Ledger: Centralized list of appointments with real-time status tracking.
+- Printable Verification Slips: Standardized printable slips with student and faculty signature sections.
+- Session Feedback: Post-consultation rating and review system for completed appointments.
+- Cancellation Control: Ability to cancel appointments and reopen reserved time slots.
 
+Faculty Portal:
+- Office Hours Configuration: Management interface to add, edit, or remove weekly availability windows.
+- Profile Management: Controls for updating office location, consultation mode, and meeting links.
+- Dashboard Metrics: KPI counters tracking total, pending, confirmed, and completed sessions.
+- Status Management: Controls to confirm, complete, or reject consultation requests with notes.
+- Evaluation Visibility: Access to student ratings and feedback on completed sessions.
+- Queue Management: Capability to remove old or cancelled consultation records.
 
-\## 👥 Development Team \& Feature Ownership
+Global Features:
+- In-App Notification Center: Bell counter and dropdown alerting users to bookings, status updates, and cancellations.
+- Weekly Schedule Matrix: Overview of faculty duty hours across Monday through Saturday.
 
+## Installation and Setup
 
+Prerequisites:
+- Node.js (version 18 or later)
+- XAMPP (Apache and MySQL services running)
 
-| Contributor | Role \& Assigned Feature | Status |
+1. Database Setup
+Open phpMyAdmin (http://localhost/phpmyadmin), then create a database named faculty_consultation_db or import database/schema.sql.
 
-| :--- | :--- | :---: |
-
-| \*\*Cris Ivan M. Nual\*\* | Core Architecture, DB Schema (`mysql2` pool), RBAC Session Auth | Completed |
-
-| \*\*Jasmine Baldoza\*\* | Faculty Directory Catalog, Real-time Live Search Engine | Completed |
-
-| \*\*April Peñones\*\* | Consultation Records Ledger, Printable Attendance Slip (`@media print`) | Completed |
-
-| \*\*Kyle Martirez\*\* | Analytics Dashboard KPIs, Faculty Review \& Notes Workflow | Completed |
-
-
-
-\---
-
-
-
-\## 🛠️ Technology Stack
-
-
-
-\- \*\*Runtime \& Backend Framework:\*\* Node.js, Express.js
-
-\- \*\*Database:\*\* MySQL 8.x (Connection Pooling via `mysql2`)
-
-\- \*\*Template Engine:\*\* EJS (Embedded JavaScript)
-
-\- \*\*Styling \& Icons:\*\* Bootstrap 5.3, Bootstrap Icons
-
-\- \*\*Security:\*\* `bcryptjs` password hashing, `express-session` state management
-
-\- \*\*Version Control \& Management:\*\* Git (Feature Branch Workflow), GitHub Projects / Kanban
-
-
-
-\---
-
-
-
-\## 🚀 Setup \& Local Installation
-
-
-
-\### Prerequisites
-
-1\. \*\*Node.js\*\* (v18.x or later installed)
-
-2\. \*\*XAMPP\*\* (Apache \& MySQL services running)
-
-
-
-\### 1. Database Configuration
-
-1\. Open \*\*phpMyAdmin\*\* (`http://localhost/phpmyadmin`).
-
-2\. Create a database named `faculty\_consultation\_db` or execute `database/schema.sql`.
-
-
-
-\### 2. Environment Configuration
-
-Verify your `.env` file in the project root:
-
-```env
-
+2. Environment Setup
+Configure your .env file in the project root:
 PORT=3000
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=
+DB_NAME=faculty_consultation_db
+SESSION_SECRET=faculty_consultation_secret_2026
 
-DB\_HOST=localhost
+3. Execution
+Run the following commands in PowerShell:
+npm install
+node app.js
 
-DB\_USER=root
+The system will run at http://localhost:3000.
 
-DB\_PASSWORD=
+## Demo Accounts
 
-DB\_NAME=faculty\_consultation\_db
+Password for all accounts: password123
 
-SESSION\_SECRET=faculty\_consultation\_secret\_2026
+- Student: juan_student
+- Faculty: engr_reyes
 
+New accounts can also be created directly via the registration page (/register).
+
+## Academic Disclosure
+
+Generative AI was utilized during development for code boilerplate scaffolding, SQL schema validation, script formatting, and documentation assistance. All system logic, integration workflows, and database interactions were manually implemented, tested, and validated.
+
+## License
+
+This project is licensed under the MIT License.
