@@ -1,12 +1,12 @@
 ﻿# Faculty Consultation Booking System
 
-An academic scheduling portal designed for Camarines Sur Polytechnic Colleges (CSPC) to manage instructor consultation hours, handle appointment bookings, and verify attendance records.
+A centralized web-based scheduling platform that optimizes academic consultation management by enabling structured appointment booking, real-time availability tracking, and automated attendance verification.
 
 ## Project Contributors
 
 - Cris Ivan M. Nual: System Architecture, Database Schema, Authentication, Session Management
 - Jasmine Baldoza: Faculty Directory, Client-side Search, Instructor Booking Profiles
-- April Peñones: Consultation Records Ledger, Printable Attendance Slips, Slot Conflict Safeguards
+- April D. Peñones: Consultation Records Ledger, Printable Attendance Slips, Slot Conflict Safeguards
 - Kyle Martirez: Analytics Dashboard, Schedule Matrix View, In-App Notifications, Office Hours Management
 
 ## Technology Stack
