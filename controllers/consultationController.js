@@ -1,5 +1,7 @@
 ﻿const Consultation = require('../models/Consultation');
 const Review = require('../models/Review');
+const Notification = require('../models/Notification');
+const User = require('../models/User');
 
 exports.showDashboard = async (req, res) => {
   try {
@@ -37,25 +39,32 @@ exports.checkBookedSlots = async (req, res) => {
 exports.bookConsultation = async (req, res) => {
   try {
     const { faculty_id, consultation_date, time_slot, subject_code, topic_agenda } = req.body;
-    const student_id = req.session.user.id;
+    const student = req.session.user;
 
     if (!faculty_id || !consultation_date || !time_slot || !topic_agenda) {
       return res.redirect('/faculty?error=missing_fields');
     }
 
-    // Backend conflict check safeguard
     const isConflict = await Consultation.checkSlotConflict(faculty_id, consultation_date, time_slot);
     if (isConflict) {
       return res.redirect('/faculty?error=conflict');
     }
 
-    await Consultation.create({
-      student_id,
+    const ref = await Consultation.create({
+      student_id: student.id,
       faculty_id,
       consultation_date,
       time_slot,
       subject_code: subject_code || 'N/A',
       topic_agenda
+    });
+
+    // Notify Faculty Member
+    await Notification.create({
+      user_id: faculty_id,
+      title: 'New Consultation Request',
+      message: `${student.full_name} booked a session on ${consultation_date} (${time_slot}). Ref: ${ref}`,
+      link: '/dashboard'
     });
 
     res.redirect('/consultations');
@@ -86,11 +95,26 @@ exports.showLedger = async (req, res) => {
 exports.updateStatus = async (req, res) => {
   try {
     const { consultation_id, status, faculty_notes } = req.body;
+    const faculty = req.session.user;
+
     if (!consultation_id || !status) {
       return res.status(400).send('Consultation ID and status are required.');
     }
 
     await Consultation.updateStatus(consultation_id, status, faculty_notes);
+
+    // Fetch consultation details to get student_id
+    const [cRows] = await require('../config/db').query('SELECT reference_no, student_id FROM consultations WHERE id = ?', [consultation_id]);
+    if (cRows && cRows[0]) {
+      const c = cRows[0];
+      await Notification.create({
+        user_id: c.student_id,
+        title: `Consultation ${status.toUpperCase()}`,
+        message: `${faculty.full_name} updated your appointment (${c.reference_no}) to "${status.toUpperCase()}".`,
+        link: '/consultations'
+      });
+    }
+
     res.redirect('/dashboard');
   } catch (err) {
     console.error('Error updating status:', err.message);
@@ -101,7 +125,7 @@ exports.updateStatus = async (req, res) => {
 exports.submitReview = async (req, res) => {
   try {
     const { consultation_id, faculty_id, rating, comment } = req.body;
-    const student_id = req.session.user.id;
+    const student = req.session.user;
 
     if (!consultation_id || !faculty_id || !rating) {
       return res.status(400).send('Consultation ID, Faculty ID, and Rating are required.');
@@ -110,15 +134,35 @@ exports.submitReview = async (req, res) => {
     await Review.create({
       consultation_id,
       faculty_id,
-      student_id,
+      student_id: student.id,
       rating: parseInt(rating, 10),
       comment: comment || ''
+    });
+
+    // Notify Faculty Member
+    await Notification.create({
+      user_id: faculty_id,
+      title: 'New Student Evaluation',
+      message: `${student.full_name} submitted a ${rating}-star evaluation for your consultation session.`,
+      link: '/dashboard'
     });
 
     res.redirect('/consultations');
   } catch (err) {
     console.error('Error submitting review:', err.message);
     res.status(500).send('Failed to submit consultation review.');
+  }
+};
+
+exports.markNotificationsRead = async (req, res) => {
+  try {
+    if (req.session.user) {
+      await Notification.markAllAsRead(req.session.user.id);
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error marking notifications as read:', err.message);
+    res.status(500).json({ error: 'Failed' });
   }
 };
 

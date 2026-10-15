@@ -9,6 +9,7 @@ router.post('/consultations/book', requireAuth, consultationController.bookConsu
 router.get('/consultations', requireAuth, consultationController.showLedger);
 router.post('/consultations/status', requireAuth, consultationController.updateStatus);
 router.post('/consultations/review', requireAuth, consultationController.submitReview);
+router.post('/notifications/mark-read', requireAuth, consultationController.markNotificationsRead);
 router.get('/consultations/slip/:ref', requireAuth, consultationController.showPrintSlip);
 
 module.exports = router;
