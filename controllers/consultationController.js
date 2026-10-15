@@ -1,7 +1,7 @@
-﻿const Consultation = require('../models/Consultation');
+const Consultation = require('../models/Consultation');
 const Review = require('../models/Review');
 const Notification = require('../models/Notification');
-const User = require('../models/User');
+const db = require('../config/db');
 
 exports.showDashboard = async (req, res) => {
   try {
@@ -59,7 +59,6 @@ exports.bookConsultation = async (req, res) => {
       topic_agenda
     });
 
-    // Notify Faculty Member
     await Notification.create({
       user_id: faculty_id,
       title: 'New Consultation Request',
@@ -103,8 +102,7 @@ exports.updateStatus = async (req, res) => {
 
     await Consultation.updateStatus(consultation_id, status, faculty_notes);
 
-    // Fetch consultation details to get student_id
-    const [cRows] = await require('../config/db').query('SELECT reference_no, student_id FROM consultations WHERE id = ?', [consultation_id]);
+    const [cRows] = await db.query('SELECT reference_no, student_id FROM consultations WHERE id = ?', [consultation_id]);
     if (cRows && cRows[0]) {
       const c = cRows[0];
       await Notification.create({
@@ -119,6 +117,46 @@ exports.updateStatus = async (req, res) => {
   } catch (err) {
     console.error('Error updating status:', err.message);
     res.status(500).send('Failed to update consultation status.');
+  }
+};
+
+exports.deleteConsultation = async (req, res) => {
+  try {
+    const { consultation_id } = req.body;
+    const user = req.session.user;
+
+    if (!consultation_id) {
+      return res.status(400).send('Consultation ID required.');
+    }
+
+    // Notify counterpart before record deletion
+    const [cRows] = await db.query('SELECT * FROM consultations WHERE id = ?', [consultation_id]);
+    if (cRows && cRows[0]) {
+      const c = cRows[0];
+      if (user.role === 'student') {
+        await Notification.create({
+          user_id: c.faculty_id,
+          title: 'Consultation Cancelled by Student',
+          message: `${user.full_name} cancelled their consultation appointment (${c.reference_no}) scheduled for ${new Date(c.consultation_date).toLocaleDateString()} (${c.time_slot}).`,
+          link: '/dashboard'
+        });
+      } else if (user.role === 'faculty') {
+        await Notification.create({
+          user_id: c.student_id,
+          title: 'Consultation Removed by Faculty',
+          message: `${user.full_name} removed consultation record (${c.reference_no}).`,
+          link: '/consultations'
+        });
+      }
+    }
+
+    await Consultation.deleteById(consultation_id, user.id, user.role);
+
+    const referer = req.get('Referrer') || '/consultations';
+    res.redirect(referer);
+  } catch (err) {
+    console.error('Error deleting consultation:', err.message);
+    res.status(500).send('Failed to delete consultation record.');
   }
 };
 
@@ -139,7 +177,6 @@ exports.submitReview = async (req, res) => {
       comment: comment || ''
     });
 
-    // Notify Faculty Member
     await Notification.create({
       user_id: faculty_id,
       title: 'New Student Evaluation',

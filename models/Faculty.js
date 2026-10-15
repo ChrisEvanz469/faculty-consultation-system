@@ -19,7 +19,7 @@ class Faculty {
 
     for (let f of rows) {
       const [slots] = await db.query(
-        'SELECT day_of_week, TIME_FORMAT(start_time, "%h:%i %p") as start_time, TIME_FORMAT(end_time, "%h:%i %p") as end_time FROM availability_slots WHERE faculty_id = ? AND is_active = TRUE',
+        'SELECT id, day_of_week, TIME_FORMAT(start_time, "%h:%i %p") as start_time, TIME_FORMAT(end_time, "%h:%i %p") as end_time, max_students FROM availability_slots WHERE faculty_id = ? AND is_active = TRUE ORDER BY FIELD(day_of_week, "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"), start_time ASC',
         [f.id]
       );
       f.slots = slots;
@@ -47,7 +47,7 @@ class Faculty {
 
     const faculty = rows[0];
     const [slots] = await db.query(
-      'SELECT day_of_week, TIME_FORMAT(start_time, "%h:%i %p") as start_time, TIME_FORMAT(end_time, "%h:%i %p") as end_time FROM availability_slots WHERE faculty_id = ? AND is_active = TRUE',
+      'SELECT id, day_of_week, TIME_FORMAT(start_time, "%h:%i %p") as start_time, TIME_FORMAT(end_time, "%h:%i %p") as end_time, max_students FROM availability_slots WHERE faculty_id = ? AND is_active = TRUE ORDER BY FIELD(day_of_week, "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"), start_time ASC',
       [faculty.id]
     );
     faculty.slots = slots;
@@ -87,6 +87,31 @@ class Faculty {
     });
 
     return matrix;
+  }
+
+  static async addSlot({ faculty_id, day_of_week, start_time, end_time, max_students }) {
+    const sql = `
+      INSERT INTO availability_slots (faculty_id, day_of_week, start_time, end_time, max_students, is_active)
+      VALUES (?, ?, ?, ?, ?, TRUE)
+    `;
+    await db.query(sql, [faculty_id, day_of_week, start_time, end_time, max_students || 4]);
+  }
+
+  static async deleteSlot(slot_id, faculty_id) {
+    const sql = `DELETE FROM availability_slots WHERE id = ? AND faculty_id = ?`;
+    await db.query(sql, [slot_id, faculty_id]);
+  }
+
+  static async updateProfile(user_id, { office_location, consultation_mode, meeting_link }) {
+    const sql = `
+      INSERT INTO faculty_profiles (user_id, office_location, consultation_mode, meeting_link)
+      VALUES (?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE 
+        office_location = VALUES(office_location),
+        consultation_mode = VALUES(consultation_mode),
+        meeting_link = VALUES(meeting_link)
+    `;
+    await db.query(sql, [user_id, office_location, consultation_mode, meeting_link || null]);
   }
 
   static calculateNextAvailable(slots) {

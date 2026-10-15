@@ -1,4 +1,4 @@
-﻿const db = require('../config/db');
+const db = require('../config/db');
 
 class Consultation {
   static async create({ student_id, faculty_id, consultation_date, time_slot, subject_code, topic_agenda }) {
@@ -30,8 +30,8 @@ class Consultation {
   static async getBookedSlots(faculty_id, consultation_date) {
     const sql = `
       SELECT time_slot FROM consultations
-      WHERE faculty_id = ?
-        AND consultation_date = ?
+      WHERE faculty_id = ? 
+        AND consultation_date = ? 
         AND status IN ('pending', 'confirmed')
     `;
     const [rows] = await db.query(sql, [faculty_id, consultation_date]);
@@ -90,6 +90,23 @@ class Consultation {
   static async updateStatus(id, status, faculty_notes) {
     const sql = `UPDATE consultations SET status = ?, faculty_notes = ? WHERE id = ?`;
     await db.query(sql, [status, faculty_notes || null, id]);
+  }
+
+  static async deleteById(id, userId, role) {
+    let sql = '';
+    let params = [];
+    if (role === 'student') {
+      sql = 'DELETE FROM consultations WHERE id = ? AND student_id = ?';
+      params = [id, userId];
+    } else if (role === 'faculty') {
+      sql = 'DELETE FROM consultations WHERE id = ? AND faculty_id = ?';
+      params = [id, userId];
+    } else if (role === 'admin') {
+      sql = 'DELETE FROM consultations WHERE id = ?';
+      params = [id];
+    }
+    const [result] = await db.query(sql, params);
+    return result.affectedRows > 0;
   }
 
   static async getMetrics(userId, role) {

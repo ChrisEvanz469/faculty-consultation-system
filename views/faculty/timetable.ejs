@@ -80,67 +80,7 @@
   </style>
 </head>
 <body>
-  <!-- Standardized Locked Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container">
-      <a class="navbar-brand fw-bold d-flex align-items-center" href="/dashboard">
-        <i class="bi bi-calendar2-check-fill me-2 fs-5"></i> Faculty Consultation Portal
-      </a>
-      <div class="d-flex align-items-center gap-2">
-        <a href="/dashboard" class="btn btn-outline-light btn-sm"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
-        <a href="/faculty" class="btn btn-outline-light btn-sm"><i class="bi bi-search me-1"></i> Directory</a>
-        <a href="/timetable" class="btn btn-light btn-sm text-primary fw-semibold"><i class="bi bi-grid-3x3-gap me-1"></i> Schedule</a>
-        <a href="/consultations" class="btn btn-outline-light btn-sm"><i class="bi bi-journal-text me-1"></i> Appointments</a>
-        
-        <!-- Notification Bell Dropdown -->
-        <div class="dropdown">
-          <button class="btn btn-outline-light btn-sm position-relative" type="button" id="notifBellBtn" data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
-            <i class="bi bi-bell-fill"></i>
-            <% if (unreadNotifCount > 0) { %>
-              <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                <%= unreadNotifCount %>
-              </span>
-            <% } %>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end shadow-sm dropdown-menu-notif p-0" aria-labelledby="notifBellBtn">
-            <li class="p-3 border-bottom d-flex justify-content-between align-items-center bg-light">
-              <span class="fw-bold small text-dark"><i class="bi bi-bell me-1"></i> Notifications</span>
-              <span class="badge bg-primary rounded-pill"><%= notificationsList.length %></span>
-            </li>
-            <% if (notificationsList.length === 0) { %>
-              <li class="p-4 text-center text-muted small">
-                <i class="bi bi-bell-slash fs-4 d-block mb-1"></i>
-                No notifications yet.
-              </li>
-            <% } %>
-            <% notificationsList.forEach(function(n) { %>
-              <li>
-                <a href="<%= n.link || '/consultations' %>" class="dropdown-item p-3 border-bottom <%= n.is_read ? 'text-muted' : 'bg-light-subtle fw-semibold' %>" style="white-space: normal;">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <span class="small <%= n.is_read ? 'text-dark' : 'text-primary' %>"><%= n.title %></span>
-                    <span class="text-muted" style="font-size: 0.65rem;"><%= new Date(n.created_at).toLocaleDateString([], {month:'short', day:'numeric'}) %></span>
-                  </div>
-                  <div class="small text-secondary mt-1" style="font-size: 0.78rem;"><%= n.message %></div>
-                </a>
-              </li>
-            <% }); %>
-          </ul>
-        </div>
-
-        <div class="vr bg-white mx-2" style="height: 22px; opacity: 0.35;"></div>
-        
-        <div class="d-flex align-items-center bg-white bg-opacity-10 border border-white border-opacity-25 rounded-pill px-3 py-1 me-1">
-          <i class="bi bi-person-circle text-white me-2 fs-6"></i>
-          <span class="text-white fw-semibold small me-2"><%= user.full_name %></span>
-          <span class="badge <%= user.role === 'faculty' ? 'bg-warning text-dark' : 'bg-white text-primary' %> text-uppercase role-badge">
-            <%= user.role %>
-          </span>
-        </div>
-
-        <a href="/logout" class="btn btn-outline-light btn-sm" title="Logout"><i class="bi bi-box-arrow-right"></i></a>
-      </div>
-    </div>
-  </nav>
+  <%- include('../partials/navbar', { active: 'schedule' }) %>
 
   <div class="container-fluid px-4 my-4">
     <!-- Good Day Banner -->

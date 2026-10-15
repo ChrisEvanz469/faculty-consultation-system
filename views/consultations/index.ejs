@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -11,98 +11,20 @@
     body { background-color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; }
     .hero-banner {
       background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
-      border-radius: 16px;
-      color: white;
-      padding: 30px 35px;
-      margin-bottom: 25px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 10px 25px rgba(2, 132, 199, 0.2);
-    }
-    .hero-banner::after {
-      content: "";
-      position: absolute;
-      right: -20px;
-      bottom: -40px;
-      width: 220px;
-      height: 220px;
-      background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 70%);
-      border-radius: 50%;
+      border-radius: 16px; color: white; padding: 30px 35px; margin-bottom: 25px; position: relative; overflow: hidden;
     }
     .badge-status-pending { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
     .badge-status-confirmed { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
     .badge-status-completed { background-color: #cff4fc; color: #055160; border: 1px solid #b6effb; }
     .badge-status-cancelled, .badge-status-rejected { background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
-    .role-badge { font-size: 0.68rem; letter-spacing: 0.8px; font-weight: 800; padding: 4px 8px; border-radius: 6px; }
-    .dropdown-menu-notif { width: 320px; max-height: 400px; overflow-y: auto; border-radius: 12px; }
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container">
-      <a class="navbar-brand fw-bold d-flex align-items-center" href="/dashboard">
-        <i class="bi bi-calendar2-check-fill me-2 fs-5"></i> Faculty Consultation Portal
-      </a>
-      <div class="d-flex align-items-center gap-2">
-        <a href="/dashboard" class="btn btn-outline-light btn-sm"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
-        <a href="/faculty" class="btn btn-outline-light btn-sm"><i class="bi bi-search me-1"></i> Directory</a>
-        <a href="/timetable" class="btn btn-outline-light btn-sm"><i class="bi bi-grid-3x3-gap me-1"></i> Schedule</a>
-        <a href="/consultations" class="btn btn-light btn-sm text-primary fw-semibold"><i class="bi bi-journal-text me-1"></i> Appointments</a>
-        
-        <div class="dropdown">
-          <button class="btn btn-outline-light btn-sm position-relative" type="button" id="notifBellBtn" data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
-            <i class="bi bi-bell-fill"></i>
-            <% if (unreadNotifCount > 0) { %>
-              <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                <%= unreadNotifCount %>
-              </span>
-            <% } %>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end shadow-sm dropdown-menu-notif p-0" aria-labelledby="notifBellBtn">
-            <li class="p-3 border-bottom d-flex justify-content-between align-items-center bg-light">
-              <span class="fw-bold small text-dark"><i class="bi bi-bell me-1"></i> Notifications</span>
-              <span class="badge bg-primary rounded-pill"><%= notificationsList.length %></span>
-            </li>
-            <% if (notificationsList.length === 0) { %>
-              <li class="p-4 text-center text-muted small">
-                <i class="bi bi-bell-slash fs-4 d-block mb-1"></i>
-                No notifications yet.
-              </li>
-            <% } %>
-            <% notificationsList.forEach(function(n) { %>
-              <li>
-                <a href="<%= n.link || '/consultations' %>" class="dropdown-item p-3 border-bottom <%= n.is_read ? 'text-muted' : 'bg-light-subtle fw-semibold' %>" style="white-space: normal;">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <span class="small <%= n.is_read ? 'text-dark' : 'text-primary' %>"><%= n.title %></span>
-                    <span class="text-muted" style="font-size: 0.65rem;"><%= new Date(n.created_at).toLocaleDateString([], {month:'short', day:'numeric'}) %></span>
-                  </div>
-                  <div class="small text-secondary mt-1" style="font-size: 0.78rem;"><%= n.message %></div>
-                </a>
-              </li>
-            <% }); %>
-          </ul>
-        </div>
-
-        <div class="vr bg-white mx-2" style="height: 22px; opacity: 0.35;"></div>
-        
-        <div class="d-flex align-items-center bg-white bg-opacity-10 border border-white border-opacity-25 rounded-pill px-3 py-1 me-1">
-          <i class="bi bi-person-circle text-white me-2 fs-6"></i>
-          <span class="text-white fw-semibold small me-2"><%= user.full_name %></span>
-          <span class="badge <%= user.role === 'faculty' ? 'bg-warning text-dark' : 'bg-white text-primary' %> text-uppercase role-badge">
-            <%= user.role %>
-          </span>
-        </div>
-
-        <a href="/logout" class="btn btn-outline-light btn-sm" title="Logout"><i class="bi bi-box-arrow-right"></i></a>
-      </div>
-    </div>
-  </nav>
+  <%- include('../partials/navbar', { active: 'appointments' }) %>
 
   <div class="container my-4">
     <div class="hero-banner">
-      <div class="small text-uppercase fw-semibold tracking-wide text-light opacity-75 mb-1">
-        <%= greeting %>,
-      </div>
+      <div class="small text-uppercase fw-semibold tracking-wide text-light opacity-75 mb-1"><%= greeting %>,</div>
       <h2 class="fw-bold mb-1 text-uppercase"><%= user.full_name %></h2>
       <div class="small opacity-90"><i class="bi bi-calendar3 me-1"></i> <%= todayFormatted %></div>
     </div>
@@ -110,7 +32,7 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
       <div>
         <h4 class="fw-bold text-dark mb-1">Consultation Records Ledger</h4>
-        <p class="text-muted small mb-0">Track scheduled appointments, review feedback, and generate official consultation slips.</p>
+        <p class="text-muted small mb-0">Track scheduled appointments, reviews, and attendance verification.</p>
       </div>
       <div>
         <% if (user.role === 'student') { %>
@@ -129,10 +51,10 @@
               <th class="ps-4">Reference No.</th>
               <th><%= user.role === 'student' ? 'Faculty Member' : 'Student Requester' %></th>
               <th>Date & Time</th>
-              <th>Course / Subject</th>
-              <th>Topic / Agenda</th>
+              <th>Course</th>
+              <th>Agenda</th>
               <th>Status</th>
-              <th class="text-end pe-4">Actions</th>
+              <th class="text-end pe-4">Actions / Options</th>
             </tr>
           </thead>
           <tbody>
@@ -161,37 +83,57 @@
                 <td>
                   <span class="badge bg-light text-dark border"><%= r.subject_code || 'General' %></span>
                 </td>
-                <td style="max-width: 220px;">
+                <td style="max-width: 200px;">
                   <div class="small text-truncate" title="<%= r.topic_agenda %>"><%= r.topic_agenda %></div>
                 </td>
                 <td>
-                  <span class="badge badge-status-<%= r.status %> text-capitalize px-2 py-1">
-                    <%= r.status %>
-                  </span>
+                  <span class="badge badge-status-<%= r.status %> text-capitalize px-2 py-1"><%= r.status %></span>
                 </td>
                 <td class="text-end pe-4">
-                  <div class="d-inline-flex gap-1 align-items-center">
+                  <div class="d-inline-flex gap-1 align-items-center justify-content-end">
                     <a href="/consultations/slip/<%= r.reference_no %>" class="btn btn-outline-secondary btn-sm" target="_blank" title="Print Slip">
                       <i class="bi bi-printer"></i>
                     </a>
 
-                    <% if (user.role === 'student' && r.status === 'completed') { %>
-                      <% if (!r.review_id) { %>
-                        <button class="btn btn-warning btn-sm fw-semibold" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#reviewModal"
-                                data-id="<%= r.id %>"
-                                data-faculty-id="<%= r.faculty_id %>"
-                                data-faculty-name="<%= r.faculty_name %>"
-                                data-ref="<%= r.reference_no %>">
-                          <i class="bi bi-star-fill me-1"></i> Rate
-                        </button>
-                      <% } else { %>
-                        <span class="badge bg-warning-subtle text-dark border px-2 py-1 small" title="<%= r.review_comment %>">
-                          <i class="bi bi-star-fill text-warning me-1"></i><%= r.review_rating %>/5
-                        </span>
+                    <!-- Star Ratings Display -->
+                    <% if (r.status === 'completed') { %>
+                      <% if (user.role === 'student') { %>
+                        <% if (!r.review_id) { %>
+                          <button class="btn btn-warning btn-sm fw-semibold" 
+                                  data-bs-toggle="modal" 
+                                  data-bs-target="#reviewModal"
+                                  data-id="<%= r.id %>"
+                                  data-faculty-id="<%= r.faculty_id %>"
+                                  data-faculty-name="<%= r.faculty_name %>"
+                                  data-ref="<%= r.reference_no %>">
+                            <i class="bi bi-star-fill me-1"></i> Rate
+                          </button>
+                        <% } else { %>
+                          <span class="badge bg-warning-subtle text-dark border px-2 py-1 small" title="Your Review: <%= r.review_comment || 'No comment' %>">
+                            <i class="bi bi-star-fill text-warning me-1"></i><%= r.review_rating %>/5
+                          </span>
+                        <% } %>
+                      <% } else if (user.role === 'faculty') { %>
+                        <% if (r.review_rating) { %>
+                          <span class="badge bg-warning-subtle text-dark border px-2 py-1 small" title="Student Feedback: <%= r.review_comment || 'No written feedback' %>">
+                            <i class="bi bi-star-fill text-warning me-1"></i><%= r.review_rating %>/5
+                          </span>
+                        <% } else { %>
+                          <span class="badge bg-light text-muted border px-2 py-1 small">Awaiting Rating</span>
+                        <% } %>
                       <% } %>
                     <% } %>
+
+                    <!-- Delete / Cancel Button (Available for both Student and Instructor) -->
+                    <button type="button" class="btn btn-outline-danger btn-sm" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#deleteConfirmModal"
+                            data-id="<%= r.id %>"
+                            data-ref="<%= r.reference_no %>"
+                            data-target-name="<%= user.role === 'student' ? r.faculty_name : r.student_name %>"
+                            title="Delete Consultation">
+                      <i class="bi bi-trash3"></i>
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -202,6 +144,41 @@
     </div>
   </div>
 
+  <!-- Delete Confirmation Modal -->
+  <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Record Deletion</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <form action="/consultations/delete" method="POST">
+          <div class="modal-body p-4 text-center">
+            <input type="hidden" name="consultation_id" id="deleteModalConsultationId">
+            <div class="bg-danger-subtle text-danger rounded-circle d-inline-flex p-3 mb-3">
+              <i class="bi bi-trash3-fill fs-2"></i>
+            </div>
+            <h5 class="fw-bold text-dark mb-2">Are you sure you want to delete this consultation?</h5>
+            <p class="text-muted small mb-1">
+              Reference: <strong id="deleteModalRef" class="font-monospace text-primary"></strong>
+            </p>
+            <p class="text-muted small mb-3">
+              With: <span id="deleteModalTargetName" class="fw-semibold text-dark"></span>
+            </p>
+            <div class="alert alert-warning py-2 small mb-0">
+              <i class="bi bi-info-circle me-1"></i> Deleting will permanently remove this appointment and automatically reopen the time slot for other students.
+            </div>
+          </div>
+          <div class="modal-footer bg-light border-0 justify-content-center">
+            <button type="button" class="btn btn-secondary btn-sm px-4" data-bs-dismiss="modal">Cancel, Keep Record</button>
+            <button type="submit" class="btn btn-danger btn-sm px-4 fw-semibold">Yes, Delete Permanently</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Review Modal -->
   <div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow">
@@ -246,6 +223,18 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    // Delete Confirmation Modal Event Listener
+    const deleteModal = document.getElementById('deleteConfirmModal');
+    if (deleteModal) {
+      deleteModal.addEventListener('show.bs.modal', function (event) {
+        const btn = event.relatedTarget;
+        document.getElementById('deleteModalConsultationId').value = btn.getAttribute('data-id');
+        document.getElementById('deleteModalRef').textContent = btn.getAttribute('data-ref');
+        document.getElementById('deleteModalTargetName').textContent = btn.getAttribute('data-target-name');
+      });
+    }
+
+    // Review Modal Event Listener
     const reviewModal = document.getElementById('reviewModal');
     if (reviewModal) {
       reviewModal.addEventListener('show.bs.modal', function (event) {
