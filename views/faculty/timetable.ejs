@@ -1,0 +1,232 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weekly Schedule - Faculty Consultation Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    html { overflow-y: scroll; }
+    body { background-color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; }
+    .hero-banner {
+      background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
+      border-radius: 16px;
+      color: white;
+      padding: 30px 35px;
+      margin-bottom: 25px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(2, 132, 199, 0.2);
+    }
+    .hero-banner::after {
+      content: "";
+      position: absolute;
+      right: -20px;
+      bottom: -40px;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 70%);
+      border-radius: 50%;
+    }
+    .role-badge { font-size: 0.68rem; letter-spacing: 0.8px; font-weight: 800; padding: 4px 8px; border-radius: 6px; }
+    .dropdown-menu-notif { width: 320px; max-height: 400px; overflow-y: auto; border-radius: 12px; }
+
+    /* 6-Day Timetable Matrix Grid */
+    .day-column {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px;
+      min-height: 420px;
+      display: flex;
+      flex-direction: column;
+    }
+    .day-header {
+      font-weight: 700;
+      font-size: 0.88rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+      border-bottom: 2px solid #0284c7;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .slot-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-left: 4px solid #0284c7;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .slot-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+    }
+    .empty-day {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      font-size: 0.82rem;
+      text-align: center;
+      padding: 15px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Standardized Locked Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold d-flex align-items-center" href="/dashboard">
+        <i class="bi bi-calendar2-check-fill me-2 fs-5"></i> Faculty Consultation Portal
+      </a>
+      <div class="d-flex align-items-center gap-2">
+        <a href="/dashboard" class="btn btn-outline-light btn-sm"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
+        <a href="/faculty" class="btn btn-outline-light btn-sm"><i class="bi bi-search me-1"></i> Directory</a>
+        <a href="/timetable" class="btn btn-light btn-sm text-primary fw-semibold"><i class="bi bi-grid-3x3-gap me-1"></i> Schedule</a>
+        <a href="/consultations" class="btn btn-outline-light btn-sm"><i class="bi bi-journal-text me-1"></i> Appointments</a>
+        
+        <!-- Notification Bell Dropdown -->
+        <div class="dropdown">
+          <button class="btn btn-outline-light btn-sm position-relative" type="button" id="notifBellBtn" data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
+            <i class="bi bi-bell-fill"></i>
+            <% if (unreadNotifCount > 0) { %>
+              <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                <%= unreadNotifCount %>
+              </span>
+            <% } %>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm dropdown-menu-notif p-0" aria-labelledby="notifBellBtn">
+            <li class="p-3 border-bottom d-flex justify-content-between align-items-center bg-light">
+              <span class="fw-bold small text-dark"><i class="bi bi-bell me-1"></i> Notifications</span>
+              <span class="badge bg-primary rounded-pill"><%= notificationsList.length %></span>
+            </li>
+            <% if (notificationsList.length === 0) { %>
+              <li class="p-4 text-center text-muted small">
+                <i class="bi bi-bell-slash fs-4 d-block mb-1"></i>
+                No notifications yet.
+              </li>
+            <% } %>
+            <% notificationsList.forEach(function(n) { %>
+              <li>
+                <a href="<%= n.link || '/consultations' %>" class="dropdown-item p-3 border-bottom <%= n.is_read ? 'text-muted' : 'bg-light-subtle fw-semibold' %>" style="white-space: normal;">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <span class="small <%= n.is_read ? 'text-dark' : 'text-primary' %>"><%= n.title %></span>
+                    <span class="text-muted" style="font-size: 0.65rem;"><%= new Date(n.created_at).toLocaleDateString([], {month:'short', day:'numeric'}) %></span>
+                  </div>
+                  <div class="small text-secondary mt-1" style="font-size: 0.78rem;"><%= n.message %></div>
+                </a>
+              </li>
+            <% }); %>
+          </ul>
+        </div>
+
+        <div class="vr bg-white mx-2" style="height: 22px; opacity: 0.35;"></div>
+        
+        <div class="d-flex align-items-center bg-white bg-opacity-10 border border-white border-opacity-25 rounded-pill px-3 py-1 me-1">
+          <i class="bi bi-person-circle text-white me-2 fs-6"></i>
+          <span class="text-white fw-semibold small me-2"><%= user.full_name %></span>
+          <span class="badge <%= user.role === 'faculty' ? 'bg-warning text-dark' : 'bg-white text-primary' %> text-uppercase role-badge">
+            <%= user.role %>
+          </span>
+        </div>
+
+        <a href="/logout" class="btn btn-outline-light btn-sm" title="Logout"><i class="bi bi-box-arrow-right"></i></a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid px-4 my-4">
+    <!-- Good Day Banner -->
+    <div class="hero-banner">
+      <div class="small text-uppercase fw-semibold tracking-wide text-light opacity-75 mb-1">
+        <%= greeting %>,
+      </div>
+      <h2 class="fw-bold mb-1 text-uppercase"><%= user.full_name %></h2>
+      <div class="small opacity-90"><i class="bi bi-calendar3 me-1"></i> <%= todayFormatted %></div>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+      <div>
+        <h4 class="fw-bold text-dark mb-1">Weekly Consultation Timetable (Mon – Sat)</h4>
+        <p class="text-muted small mb-0">Overview of faculty duty schedules, office cubicles, and consultation windows including weekend college hours.</p>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="/faculty" class="btn btn-outline-primary btn-sm fw-semibold">
+          <i class="bi bi-person-lines-fill me-1"></i> Directory View
+        </a>
+      </div>
+    </div>
+
+    <!-- 6-Day Weekly Matrix (Monday to Saturday) -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-6 g-3">
+      <% const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']; %>
+      <% days.forEach(day => { %>
+        <div class="col">
+          <div class="day-column shadow-sm h-100">
+            <div class="day-header text-primary">
+              <span><%= day %></span>
+              <span class="badge bg-primary-subtle text-primary rounded-pill"><%= (matrix[day] || []).length %></span>
+            </div>
+
+            <% if (!matrix[day] || matrix[day].length === 0) { %>
+              <div class="empty-day">
+                <div>
+                  <i class="bi bi-calendar-x fs-4 d-block mb-1"></i>
+                  No office hours
+                </div>
+              </div>
+            <% } else { %>
+              <% matrix[day].forEach(s => { %>
+                <div class="slot-card">
+                  <div class="d-flex justify-content-between align-items-start mb-1">
+                    <span class="badge bg-success-subtle text-success small fw-semibold" style="font-size: 0.7rem;">
+                      <i class="bi bi-clock me-1"></i><%= s.start_time %> - <%= s.end_time %>
+                    </span>
+                    <span class="badge bg-secondary-subtle text-secondary" style="font-size: 0.65rem;">
+                      <%= s.consultation_mode || 'In-Person' %>
+                    </span>
+                  </div>
+
+                  <div class="fw-bold text-dark small mt-2 text-truncate" title="<%= s.faculty_name %>"><%= s.faculty_name %></div>
+                  <div class="text-muted small" style="font-size: 0.75rem;">
+                    <i class="bi bi-geo-alt me-1"></i><%= s.office_location || 'CCS Lounge' %>
+                  </div>
+
+                  <div class="mt-2 pt-2 border-top d-flex justify-content-between align-items-center">
+                    <span class="text-muted" style="font-size: 0.7rem;">Cap: <%= s.max_students %></span>
+                    <a href="/faculty/<%= s.faculty_id %>/book" class="btn btn-outline-primary btn-sm py-0 px-2" style="font-size: 0.72rem;">
+                      Book <i class="bi bi-chevron-right"></i>
+                    </a>
+                  </div>
+                </div>
+              <% }); %>
+            <% } %>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const notifBtn = document.getElementById('notifBellBtn');
+    const notifBadge = document.getElementById('notifBadge');
+    if (notifBtn) {
+      notifBtn.addEventListener('click', () => {
+        if (notifBadge) {
+          fetch('/notifications/mark-read', { method: 'POST' })
+            .then(() => { notifBadge.style.display = 'none'; })
+            .catch(err => console.error(err));
+        }
+      });
+    }
+  </script>
+</body>
+</html>

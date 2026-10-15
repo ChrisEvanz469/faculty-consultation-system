@@ -17,7 +17,6 @@ class Faculty {
     `;
     const [rows] = await db.query(sql);
 
-    // Attach availability slots and next available opening
     for (let f of rows) {
       const [slots] = await db.query(
         'SELECT day_of_week, TIME_FORMAT(start_time, "%h:%i %p") as start_time, TIME_FORMAT(end_time, "%h:%i %p") as end_time FROM availability_slots WHERE faculty_id = ? AND is_active = TRUE',
@@ -56,20 +55,53 @@ class Faculty {
     return faculty;
   }
 
+  static async getWeeklyMatrix() {
+    const sql = `
+      SELECT a.id AS slot_id, a.day_of_week, 
+             TIME_FORMAT(a.start_time, "%h:%i %p") AS start_time, 
+             TIME_FORMAT(a.end_time, "%h:%i %p") AS end_time,
+             a.max_students,
+             u.id AS faculty_id, u.full_name AS faculty_name, u.department,
+             fp.office_location, fp.consultation_mode, fp.meeting_link
+      FROM availability_slots a
+      JOIN users u ON a.faculty_id = u.id
+      LEFT JOIN faculty_profiles fp ON u.id = fp.user_id
+      WHERE a.is_active = TRUE
+      ORDER BY FIELD(a.day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'), a.start_time ASC
+    `;
+    const [rows] = await db.query(sql);
+
+    const matrix = {
+      Monday: [],
+      Tuesday: [],
+      Wednesday: [],
+      Thursday: [],
+      Friday: [],
+      Saturday: []
+    };
+
+    rows.forEach(r => {
+      if (matrix[r.day_of_week]) {
+        matrix[r.day_of_week].push(r);
+      }
+    });
+
+    return matrix;
+  }
+
   static calculateNextAvailable(slots) {
     if (!slots || slots.length === 0) return 'No upcoming slots';
     const dayMap = { Sunday: 0, Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6 };
     const today = new Date();
     const currentDay = today.getDay();
 
-    // Find closest upcoming duty day
     let closestSlot = null;
     let minDiff = 8;
 
     for (let s of slots) {
       const targetDay = dayMap[s.day_of_week];
       let diff = targetDay - currentDay;
-      if (diff <= 0) diff += 7; // next week
+      if (diff <= 0) diff += 7;
       if (diff < minDiff) {
         minDiff = diff;
         closestSlot = s;
