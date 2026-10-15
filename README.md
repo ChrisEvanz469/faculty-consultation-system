@@ -72,7 +72,7 @@ The system will run at http://localhost:3000.
 
 Password for all accounts: password123
 
-- Student: juan_student
+- Student: ivan_nual
 - Faculty: engr_reyes
 
 New accounts can also be created directly via the registration page (/register).
