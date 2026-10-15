@@ -50,12 +50,12 @@
       <div class="row g-3">
         <div class="col-md-6">
           <label class="form-label small fw-semibold" id="idLabel">Student ID Number <span class="text-danger">*</span></label>
-          <input type="text" name="id_number" id="idInput" class="form-control" placeholder="e.g. 2023-10021" value="<%= formData.id_number || '' %>" required>
+          <input type="text" name="id_number" id="idInput" class="form-control" placeholder="e.g. 2411971" value="<%= formData.id_number || '' %>" required>
         </div>
 
         <div class="col-md-6">
           <label class="form-label small fw-semibold">Full Name <span class="text-danger">*</span></label>
-          <input type="text" name="full_name" class="form-control" placeholder="e.g. Juan Dela Cruz" value="<%= formData.full_name || '' %>" required>
+          <input type="text" name="full_name" class="form-control" placeholder="e.g. Cris Ivan Nual" value="<%= formData.full_name || '' %>" required>
         </div>
 
         <div class="col-md-6">
@@ -72,7 +72,7 @@
           <label class="form-label small fw-semibold">Choose Username <span class="text-danger">*</span></label>
           <div class="input-group">
             <span class="input-group-text bg-light"><i class="bi bi-at"></i></span>
-            <input type="text" name="username" class="form-control" placeholder="e.g. juan_delacruz" value="<%= formData.username || '' %>" required>
+            <input type="text" name="username" class="form-control" placeholder="e.g. ivan_nual" value="<%= formData.username || '' %>" required>
           </div>
         </div>
 
@@ -112,7 +112,7 @@
         idInput.placeholder = 'e.g. PROF-2026-05';
       } else {
         idLabel.innerHTML = 'Student ID Number <span class="text-danger">*</span>';
-        idInput.placeholder = 'e.g. 2023-10021';
+        idInput.placeholder = 'e.g. 2411971';
       }
     }
 
