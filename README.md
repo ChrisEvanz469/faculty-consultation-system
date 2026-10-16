@@ -9,6 +9,10 @@ A centralized web-based scheduling platform that optimizes academic consultation
 - April D. Peñones: Consultation Records Ledger, Printable Attendance Slips, Slot Conflict Safeguards
 - Kyle Martirez: Analytics Dashboard, Schedule Matrix View, In-App Notifications, Office Hours Management
 
+## Assigned System 
+
+Faculty Consultation Booking System
+
 ## Technology Stack
 
 - Runtime Environment: Node.js
@@ -76,6 +80,25 @@ Password for all accounts: password123
 - Faculty: engr_reyes
 
 New accounts can also be created directly via the registration page (/register).
+
+## Project Structure
+
+- app.js: Express setup, sessions, and routes
+- config/: database connection
+- controllers/: request handling and business logic
+- middleware/: login and role checks
+- models/: database queries
+- routes/: route definitions
+- views/: EJS pages
+- database/: schema.sql and seed.js
+
+## Known Limitations
+
+- Booking time slots are fixed periods and do not follow each instructor's configured office hours.
+- The booking calendar shows only the current month.
+- Booking does not yet validate the date format or reject past dates.
+- The status-update and review endpoints do not yet check role or ownership.
+- There are no automated tests yet.
 
 ## Academic Disclosure
 
