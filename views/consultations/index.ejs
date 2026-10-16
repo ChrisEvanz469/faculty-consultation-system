@@ -33,19 +33,19 @@
       </div>
     </div>
 
-    <!-- Table Card -->
-    <div class="soft-card p-4 overflow-hidden">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
+    <!-- Table Card with Zero Horizontal Overflow -->
+    <div class="soft-card p-4">
+      <div class="table-responsive" style="overflow-x: hidden !important;">
+        <table class="table table-hover align-middle mb-0 w-100" style="table-layout: auto;">
           <thead class="small text-muted" style="border-bottom: 2px solid #edf2f7;">
             <tr>
-              <th class="ps-3">REFERENCE NO.</th>
+              <th class="ps-2">REFERENCE NO.</th>
               <th><%= user.role === 'student' ? 'FACULTY MEMBER' : 'STUDENT REQUESTER' %></th>
               <th>DATE & TIME</th>
               <th>COURSE</th>
               <th>AGENDA</th>
               <th>STATUS</th>
-              <th class="text-end pe-3">ACTIONS / OPTIONS</th>
+              <th class="text-end pe-2">ACTIONS / OPTIONS</th>
             </tr>
           </thead>
           <tbody>
@@ -60,30 +60,30 @@
 
             <% records.forEach(function(r) { %>
               <tr>
-                <td class="ps-3"><span class="fw-bold font-monospace" style="color: #415993;"><%= r.reference_no %></span></td>
+                <td class="ps-2"><span class="ref-code-stamp"><%= r.reference_no %></span></td>
                 <td>
                   <div class="fw-bold text-dark"><%= user.role === 'student' ? r.faculty_name : r.student_name %></div>
-                  <div class="small text-muted"><%= user.role === 'student' ? (r.office_location || 'Faculty Room') : r.student_id_no %></div>
+                  <div class="small text-muted" style="font-size: 0.76rem;"><%= user.role === 'student' ? (r.office_location || 'Faculty Room') : r.student_id_no %></div>
                 </td>
                 <td>
                   <div class="small fw-semibold text-dark"><%= new Date(r.consultation_date).toLocaleDateString() %></div>
-                  <div class="small text-muted"><%= r.time_slot %></div>
+                  <div class="small text-muted" style="font-size: 0.76rem;"><%= r.time_slot %></div>
                 </td>
-                <td><span class="badge rounded-pill px-3 py-2" style="background: #415993; color: white;"><%= r.subject_code || 'General' %></span></td>
-                <td style="max-width: 180px;"><div class="small text-truncate" title="<%= r.topic_agenda %>"><%= r.topic_agenda %></div></td>
+                <td><span class="badge rounded-pill px-3 py-1" style="background: #415993; color: white;"><%= r.subject_code || 'General' %></span></td>
+                <td style="max-width: 170px;"><div class="small text-truncate" title="<%= r.topic_agenda %>"><%= r.topic_agenda %></div></td>
                 <td>
                   <% if (r.status === 'confirmed') { %>
-                    <span class="badge rounded-pill px-3 py-2 text-success bg-success-subtle">Confirmed</span>
+                    <span class="badge rounded-pill px-3 py-1 text-success bg-success-subtle">Confirmed</span>
                   <% } else if (r.status === 'completed') { %>
-                    <span class="badge rounded-pill px-3 py-2 text-primary bg-primary-subtle">Completed</span>
+                    <span class="badge rounded-pill px-3 py-1 text-primary bg-primary-subtle">Completed</span>
                   <% } else if (r.status === 'cancelled' || r.status === 'rejected') { %>
-                    <span class="badge rounded-pill px-3 py-2 text-danger bg-danger-subtle"><%= r.status.toUpperCase() %></span>
+                    <span class="badge rounded-pill px-3 py-1 text-danger bg-danger-subtle"><%= r.status.toUpperCase() %></span>
                   <% } else { %>
-                    <span class="badge rounded-pill px-3 py-2 text-secondary bg-light border">Pending</span>
+                    <span class="badge rounded-pill px-3 py-1 text-secondary bg-light border">Pending</span>
                   <% } %>
                 </td>
-                <td class="text-end pe-3">
-                  <div class="d-inline-flex gap-2 align-items-center">
+                <td class="text-end pe-2">
+                  <div class="d-inline-flex gap-2 align-items-center justify-content-end">
                     <a href="/consultations/slip/<%= r.reference_no %>" class="btn btn-icon-circle" target="_blank" title="Print Slip">
                       <i class="bi bi-printer"></i>
                     </a>
@@ -91,7 +91,7 @@
                     <% if (r.status === 'completed') { %>
                       <% if (user.role === 'student') { %>
                         <% if (!r.review_id) { %>
-                          <button class="btn btn-warning btn-sm rounded-pill px-3" 
+                          <button class="btn btn-warning btn-sm rounded-pill px-3 py-1" 
                                   data-bs-toggle="modal" 
                                   data-bs-target="#reviewModal"
                                   data-id="<%= r.id %>"
@@ -136,7 +136,7 @@
     </div>
   </div>
 
-  <!-- Neumorphic Dark Confirmation Modal for Deletion -->
+  <!-- Delete Modal -->
   <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content dark-modal-content p-3">

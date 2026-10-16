@@ -12,7 +12,7 @@
   <%- include('../partials/navbar', { active: 'schedule' }) %>
 
   <div class="container-fluid px-4 my-4" style="max-width: 1400px;">
-    <!-- Hero Banner -->
+    <!-- Stationary Greeting Banner -->
     <div class="hero-banner-soft">
       <div class="small text-uppercase fw-semibold tracking-wide text-light opacity-75 mb-1"><%= greeting %>,</div>
       <h2 class="fw-bold mb-1 text-uppercase"><%= user.full_name %></h2>
@@ -31,16 +31,16 @@
       </div>
     </div>
 
-    <!-- 6 Columns: Monday to Saturday -->
+    <!-- 6 Columns: Monday to Saturday with Greeting Blue Column Headers -->
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-6 g-3">
       <% const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']; %>
       <% days.forEach(day => { %>
         <div class="col">
           <div class="soft-card p-3 h-100 d-flex flex-column">
             
-            <div class="d-flex justify-content-between align-items-center pb-2 mb-3 border-bottom">
-              <span class="fw-bold small text-uppercase" style="color: #415993;"><%= day %></span>
-              <span class="badge rounded-circle" style="background: #e9eef5; color: #415993;"><%= (matrix[day] || []).length %></span>
+            <div class="timetable-col-header">
+              <span class="day-title"><%= day %></span>
+              <span class="day-badge"><%= (matrix[day] || []).length %> slots</span>
             </div>
 
             <% if (!matrix[day] || matrix[day].length === 0) { %>
@@ -49,10 +49,10 @@
               </div>
             <% } else { %>
               <% matrix[day].forEach(s => { %>
-                <div class="p-3 rounded-4 mb-3" style="background: #f1f5fa; border: 1px solid #dce4ef;">
+                <div class="p-3 rounded-4 mb-3 timetable-enlarge-card">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <span class="badge rounded-pill bg-light text-dark border small" style="font-size: 0.68rem;">
-                      <i class="bi bi-clock me-1"></i><%= s.start_time %>
+                      <i class="bi bi-clock me-1 text-primary"></i><%= s.start_time %>
                     </span>
                     <span class="badge rounded-pill bg-secondary-subtle text-secondary" style="font-size: 0.65rem;">
                       <%= s.consultation_mode || 'In-Person' %>

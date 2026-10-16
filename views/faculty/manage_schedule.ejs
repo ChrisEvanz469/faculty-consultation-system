@@ -12,7 +12,7 @@
   <%- include('../partials/navbar', { active: 'schedule' }) %>
 
   <div class="container my-4" style="max-width: 1280px;">
-    <!-- Hero Banner -->
+    <!-- Stationary Greeting Banner -->
     <div class="hero-banner-soft">
       <div class="small text-uppercase fw-semibold tracking-wide text-light opacity-75 mb-1"><%= greeting %>,</div>
       <h2 class="fw-bold mb-1 text-uppercase"><%= user.full_name %></h2>
@@ -155,8 +155,8 @@
           </form>
         </div>
 
-        <!-- Instructor Evaluation Rating Summary -->
-        <div class="soft-card p-4">
+        <!-- Instructor Evaluation Rating Summary with Hover Enlarge -->
+        <div class="rating-enlarge-card p-4">
           <div class="small text-muted mb-1 text-uppercase fw-semibold" style="font-size: 0.72rem;">Current Evaluation Rating</div>
           <div class="d-flex align-items-center gap-2">
             <span class="fs-2 fw-bold text-dark"><%= f.avg_rating || '5.0' %></span>

@@ -12,7 +12,7 @@
   <%- include('../partials/navbar', { active: 'directory' }) %>
 
   <div class="container my-4" style="max-width: 1280px;">
-    <!-- Hero Banner -->
+    <!-- Stationary Greeting Banner -->
     <div class="hero-banner-soft">
       <div class="small text-uppercase fw-semibold tracking-wide text-light opacity-75 mb-1"><%= greeting %>,</div>
       <h2 class="fw-bold mb-1 text-uppercase"><%= user.full_name %></h2>
@@ -25,13 +25,13 @@
         <p class="text-muted small mb-0">Browse faculty members, verify consultation availability, and schedule appointments.</p>
       </div>
       <div>
-        <span class="badge rounded-pill px-3 py-2 text-white" style="background: #415993;">
+        <span class="badge rounded-pill px-3 py-2 text-white" style="background: var(--primary-gradient);">
           <i class="bi bi-people-fill me-1"></i> Total Instructors: <%= facultyList.length %>
         </span>
       </div>
     </div>
 
-    <!-- Inset Sunken Search Bar -->
+    <!-- Inset Search Bar -->
     <div class="soft-card p-3 mb-4">
       <div class="row g-2 align-items-center">
         <div class="col-md-9">
@@ -56,15 +56,20 @@
             .slice(0, 2)
             .map(n => n[0])
             .join('');
+          
+          const nextParts = (f.next_available || '').split(',');
+          const dayName = nextParts[0] ? nextParts[0].trim() : 'DUTY';
+          const restOfTime = nextParts[1] ? nextParts.slice(1).join(',') : f.next_available;
         %>
         <div class="col-md-6 col-lg-4 faculty-item" 
              data-name="<%= (f.full_name || '').toLowerCase() %>" 
              data-dept="<%= (f.department || '').toLowerCase() %>"
              data-office="<%= (f.office_location || '').toLowerCase() %>">
-          <div class="soft-card h-100 p-4 d-flex flex-column">
+          
+          <div class="faculty-enlarge-card h-100 p-4 d-flex flex-column">
             
             <div class="d-flex align-items-center gap-3 mb-3">
-              <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold fs-5 text-white" style="width: 52px; height: 52px; background: #415993;">
+              <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold fs-5 text-white" style="width: 52px; height: 52px; background: var(--primary-gradient);">
                 <%= initials %>
               </div>
               <div>
@@ -79,13 +84,16 @@
               <div><i class="bi bi-envelope me-1"></i> <%= f.email %></div>
             </div>
 
-            <!-- Next Available Opening Box -->
-            <div class="p-3 rounded-4 mb-3 d-flex justify-content-between align-items-center" style="background: #f1f5fa; border: 1px solid #dce4ef;">
+            <!-- Integrated Next Available Row with Bright Blue Badge -->
+            <div class="p-3 rounded-4 mb-3 d-flex justify-content-between align-items-center" style="background: #f8fbff; border: 1px solid #dbeafe;">
               <div>
-                <div class="text-muted small fw-bold text-uppercase" style="font-size: 0.68rem;">Next Available:</div>
-                <div class="fw-bold small" style="color: #415993;"><%= f.next_available %></div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <span class="badge rounded-pill text-white px-2 py-1" style="background: var(--primary-gradient); font-size: 0.65rem; font-weight: 800; letter-spacing: 0.5px;"><%= dayName.toUpperCase() %></span>
+                  <span class="text-muted" style="font-size: 0.7rem; font-weight: 600;">NEXT DUTY</span>
+                </div>
+                <div class="small text-dark fw-bold"><%= restOfTime %></div>
               </div>
-              <a href="/faculty/<%= f.id %>/book" class="btn btn-icon-circle" style="background: #415993; color: white;" title="Book Appointment">
+              <a href="/faculty/<%= f.id %>/book" class="btn-icon-circle" style="background: var(--primary-gradient); color: white;" title="Book Appointment">
                 <i class="bi bi-chevron-right"></i>
               </a>
             </div>

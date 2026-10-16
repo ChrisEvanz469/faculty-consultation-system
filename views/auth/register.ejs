@@ -8,11 +8,12 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link href="/css/custom.css" rel="stylesheet">
 </head>
-<body class="d-flex align-items-center justify-content-center p-3">
-  <div class="soft-card p-5" style="max-width: 580px; width: 100%;">
+<body class="d-flex align-items-center justify-content-center p-3" style="min-height: 100vh; background-color: #f0f5fc;">
+  
+  <div class="card border-0 p-5" style="max-width: 580px; width: 100%; background: #ffffff; border-radius: 28px; box-shadow: 10px 10px 24px #d6e2f0, -10px -10px 24px #ffffff;">
     <div class="text-center mb-4">
-      <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 58px; height: 58px; background: #e9eef5; color: #415993;">
-        <i class="bi bi-person-plus-fill fs-3"></i>
+      <div class="btn-icon-circle mx-auto mb-3" style="width: 58px; height: 58px; font-size: 1.5rem; color: #2563eb; pointer-events: none;">
+        <i class="bi bi-person-plus-fill"></i>
       </div>
       <h4 class="fw-bold text-dark mb-1">Create Account</h4>
       <p class="text-muted small">Register for CSPC Faculty Consultation Portal</p>
@@ -31,13 +32,13 @@
         <div class="row g-2">
           <div class="col-6">
             <input type="radio" class="btn-check" name="role" id="roleStudent" value="student" <%= (!formData.role || formData.role === 'student') ? 'checked' : '' %>>
-            <label class="btn btn-outline-secondary w-100 py-2 fw-semibold small" style="border-radius: 20px;" for="roleStudent">
+            <label class="btn btn-outline-primary w-100 py-2 fw-semibold small" style="border-radius: 20px;" for="roleStudent">
               <i class="bi bi-mortarboard me-1"></i> Student
             </label>
           </div>
           <div class="col-6">
             <input type="radio" class="btn-check" name="role" id="roleFaculty" value="faculty" <%= (formData.role === 'faculty') ? 'checked' : '' %>>
-            <label class="btn btn-outline-secondary w-100 py-2 fw-semibold small" style="border-radius: 20px;" for="roleFaculty">
+            <label class="btn btn-outline-primary w-100 py-2 fw-semibold small" style="border-radius: 20px;" for="roleFaculty">
               <i class="bi bi-person-video3 me-1"></i> Faculty
             </label>
           </div>
@@ -47,37 +48,58 @@
       <div class="row g-3">
         <div class="col-md-6">
           <label class="form-label small fw-semibold text-muted" id="idLabel">Student ID Number <span class="text-danger">*</span></label>
-          <input type="text" name="id_number" id="idInput" class="form-control sunken-input" placeholder="e.g. 2411971" value="<%= formData.id_number || '' %>" required>
+          <div class="neumorph-input-group">
+            <i class="bi bi-card-heading input-icon"></i>
+            <input type="text" name="id_number" id="idInput" placeholder="e.g. 2411971" value="<%= formData.id_number || '' %>" required>
+          </div>
         </div>
 
         <div class="col-md-6">
           <label class="form-label small fw-semibold text-muted">Full Name <span class="text-danger">*</span></label>
-          <input type="text" name="full_name" class="form-control sunken-input" placeholder="e.g. Cris Ivan Nual" value="<%= formData.full_name || '' %>" required>
+          <div class="neumorph-input-group">
+            <i class="bi bi-person input-icon"></i>
+            <input type="text" name="full_name" placeholder="e.g. Cris Ivan Nual" value="<%= formData.full_name || '' %>" required>
+          </div>
         </div>
 
         <div class="col-md-6">
           <label class="form-label small fw-semibold text-muted">Program / Department <span class="text-danger">*</span></label>
-          <input type="text" name="department" class="form-control sunken-input" placeholder="e.g. BS Information Technology" value="<%= formData.department || 'College of Computer Studies' %>" required>
+          <div class="neumorph-input-group">
+            <i class="bi bi-building input-icon"></i>
+            <input type="text" name="department" placeholder="e.g. BS Information Technology" value="<%= formData.department || 'College of Computer Studies' %>" required>
+          </div>
         </div>
 
         <div class="col-md-6">
           <label class="form-label small fw-semibold text-muted">Institutional Email <span class="text-danger">*</span></label>
-          <input type="email" name="email" class="form-control sunken-input" placeholder="e.g. user@cspc.edu.ph" value="<%= formData.email || '' %>" required>
+          <div class="neumorph-input-group">
+            <i class="bi bi-envelope input-icon"></i>
+            <input type="email" name="email" placeholder="e.g. user@cspc.edu.ph" value="<%= formData.email || '' %>" required>
+          </div>
         </div>
 
         <div class="col-12">
           <label class="form-label small fw-semibold text-muted">Choose Username <span class="text-danger">*</span></label>
-          <input type="text" name="username" class="form-control sunken-input" placeholder="e.g. ivan_nual" value="<%= formData.username || '' %>" required>
+          <div class="neumorph-input-group">
+            <i class="bi bi-at input-icon"></i>
+            <input type="text" name="username" placeholder="e.g. ivan_nual" value="<%= formData.username || '' %>" required>
+          </div>
         </div>
 
         <div class="col-md-6">
           <label class="form-label small fw-semibold text-muted">Password <span class="text-danger">*</span></label>
-          <input type="password" name="password" class="form-control sunken-input" placeholder="At least 6 characters" required>
+          <div class="neumorph-input-group">
+            <i class="bi bi-lock input-icon"></i>
+            <input type="password" name="password" placeholder="At least 6 characters" required>
+          </div>
         </div>
 
         <div class="col-md-6">
           <label class="form-label small fw-semibold text-muted">Confirm Password <span class="text-danger">*</span></label>
-          <input type="password" name="confirm_password" class="form-control sunken-input" placeholder="Re-type password" required>
+          <div class="neumorph-input-group">
+            <i class="bi bi-check2-circle input-icon"></i>
+            <input type="password" name="confirm_password" placeholder="Re-type password" required>
+          </div>
         </div>
       </div>
 
@@ -88,7 +110,7 @@
 
     <div class="mt-4 pt-3 border-top text-center text-muted small">
       Already have an account? 
-      <a href="/login" class="fw-semibold text-decoration-none" style="color: #415993;">Sign In</a>
+      <a href="/login" class="fw-semibold text-decoration-none" style="color: #2563eb;">Sign In</a>
     </div>
   </div>
 
