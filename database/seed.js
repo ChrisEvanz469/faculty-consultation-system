@@ -8,7 +8,9 @@ async function seed() {
 
     // Clear existing rows safely
     await db.query('SET FOREIGN_KEY_CHECKS = 0');
-    await db.query('TRUNCATE TABLE availability_slots');
+       await db.query('TRUNCATE TABLE notifications');
+   await db.query('TRUNCATE TABLE consultation_reviews');
+await db.query('TRUNCATE TABLE availability_slots');
     await db.query('TRUNCATE TABLE consultations');
     await db.query('TRUNCATE TABLE faculty_profiles');
     await db.query('TRUNCATE TABLE users');
