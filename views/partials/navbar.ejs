@@ -1,78 +1,107 @@
+﻿<header class="top-navbar-wrapper">
+  <div class="top-navbar-inner d-flex flex-wrap justify-content-between align-items-center gap-3">
+    
+    <!-- Left Brand Pill -->
+    <a href="/dashboard" class="nav-brand-pill d-flex align-items-center">
+      <i class="bi bi-calendar2-check-fill me-2 fs-5"></i> Faculty Consultation Portal
+    </a>
 
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container">
-      <a class="navbar-brand fw-bold d-flex align-items-center" href="/dashboard">
-        <i class="bi bi-calendar2-check-fill me-2 fs-5"></i> Faculty Consultation Portal
+    <!-- Center Sunken Island with Stacked Icon + Text Tabs -->
+    <div class="nav-island-sunken">
+      <a href="/dashboard" class="nav-tab-item <%= active === 'dashboard' ? 'active' : '' %>">
+        <i class="bi bi-speedometer2 tab-icon"></i>
+        <span class="tab-label">Dashboard</span>
       </a>
-      <div class="d-flex align-items-center gap-2">
-        <a href="/dashboard" class="btn <%= active === 'dashboard' ? 'btn-light text-primary fw-semibold' : 'btn-outline-light' %> btn-sm">
-          <i class="bi bi-speedometer2 me-1"></i> Dashboard
+
+      <% if (user.role === 'student') { %>
+        <a href="/faculty" class="nav-tab-item <%= active === 'directory' ? 'active' : '' %>">
+          <i class="bi bi-search tab-icon"></i>
+          <span class="tab-label">Directory</span>
         </a>
-
-        <% if (user.role === 'student') { %>
-          <a href="/faculty" class="btn <%= active === 'directory' ? 'btn-light text-primary fw-semibold' : 'btn-outline-light' %> btn-sm">
-            <i class="bi bi-search me-1"></i> Directory
-          </a>
-          <a href="/timetable" class="btn <%= active === 'schedule' ? 'btn-light text-primary fw-semibold' : 'btn-outline-light' %> btn-sm">
-            <i class="bi bi-grid-3x3-gap me-1"></i> Schedule
-          </a>
-        <% } else { %>
-          <a href="/faculty/schedule" class="btn <%= active === 'schedule' ? 'btn-light text-primary fw-semibold' : 'btn-outline-light' %> btn-sm">
-            <i class="bi bi-clock-history me-1"></i> Manage Schedule
-          </a>
-        <% } %>
-
-        <a href="/consultations" class="btn <%= active === 'appointments' ? 'btn-light text-primary fw-semibold' : 'btn-outline-light' %> btn-sm">
-          <i class="bi bi-journal-text me-1"></i> Appointments
+        <a href="/timetable" class="nav-tab-item <%= active === 'schedule' ? 'active' : '' %>">
+          <i class="bi bi-grid-3x3-gap tab-icon"></i>
+          <span class="tab-label">Schedule</span>
         </a>
-        
-        <!-- Notification Bell Dropdown -->
-        <div class="dropdown">
-          <button class="btn btn-outline-light btn-sm position-relative" type="button" id="notifBellBtn" data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
-            <i class="bi bi-bell-fill"></i>
-            <% if (unreadNotifCount > 0) { %>
-              <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                <%= unreadNotifCount %>
-              </span>
-            <% } %>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end shadow-sm p-0" style="width: 320px; max-height: 400px; overflow-y: auto; border-radius: 12px;" aria-labelledby="notifBellBtn">
-            <li class="p-3 border-bottom d-flex justify-content-between align-items-center bg-light">
-              <span class="fw-bold small text-dark"><i class="bi bi-bell me-1"></i> Notifications</span>
-              <span class="badge bg-primary rounded-pill"><%= notificationsList.length %></span>
-            </li>
-            <% if (notificationsList.length === 0) { %>
-              <li class="p-4 text-center text-muted small">
-                <i class="bi bi-bell-slash fs-4 d-block mb-1"></i>
-                No notifications yet.
-              </li>
-            <% } %>
-            <% notificationsList.forEach(function(n) { %>
-              <li>
-                <a href="<%= n.link || '/consultations' %>" class="dropdown-item p-3 border-bottom <%= n.is_read ? 'text-muted' : 'bg-light-subtle fw-semibold' %>" style="white-space: normal;">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <span class="small <%= n.is_read ? 'text-dark' : 'text-primary' %>"><%= n.title %></span>
-                    <span class="text-muted" style="font-size: 0.65rem;"><%= new Date(n.created_at).toLocaleDateString([], {month:'short', day:'numeric'}) %></span>
-                  </div>
-                  <div class="small text-secondary mt-1" style="font-size: 0.78rem;"><%= n.message %></div>
-                </a>
-              </li>
-            <% }); %>
-          </ul>
-        </div>
+      <% } else { %>
+        <a href="/faculty/schedule" class="nav-tab-item <%= active === 'schedule' ? 'active' : '' %>">
+          <i class="bi bi-clock-history tab-icon"></i>
+          <span class="tab-label">Manage Schedule</span>
+        </a>
+      <% } %>
 
-        <div class="vr bg-white mx-2" style="height: 22px; opacity: 0.35;"></div>
-        
-        <div class="d-flex align-items-center bg-white bg-opacity-10 border border-white border-opacity-25 rounded-pill px-3 py-1 me-1">
-          <i class="bi bi-person-circle text-white me-2 fs-6"></i>
-          <span class="text-white fw-semibold small me-2"><%= user.full_name %></span>
-          <span class="badge <%= user.role === 'faculty' ? 'bg-warning text-dark' : 'bg-white text-primary' %> text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.8px; font-weight: 800; padding: 4px 8px; border-radius: 6px;">
-            <%= user.role %>
-          </span>
-        </div>
-
-        <a href="/logout" class="btn btn-outline-light btn-sm" title="Logout"><i class="bi bi-box-arrow-right"></i></a>
-      </div>
+      <a href="/consultations" class="nav-tab-item <%= active === 'appointments' ? 'active' : '' %>">
+        <i class="bi bi-journal-text tab-icon"></i>
+        <span class="tab-label">Appointments</span>
+      </a>
     </div>
-  </nav>
-  
+
+    <!-- Right Controls -->
+    <div class="d-flex align-items-center gap-3">
+      <!-- Circular Solid Navy Notification Bell Button -->
+      <div class="dropdown">
+        <button class="nav-bell-circle position-relative" type="button" id="notifBellBtn" data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
+          <i class="bi bi-bell-fill fs-6"></i>
+          <% if (unreadNotifCount > 0) { %>
+            <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
+              <%= unreadNotifCount %>
+            </span>
+          <% } %>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow p-0" style="width: 320px; max-height: 400px; overflow-y: auto; border-radius: 16px;" aria-labelledby="notifBellBtn">
+          <li class="p-3 border-bottom d-flex justify-content-between align-items-center bg-light">
+            <span class="fw-bold small text-dark"><i class="bi bi-bell me-1"></i> Notifications</span>
+            <span id="notifDropdownPill" class="badge bg-primary rounded-pill"><%= notificationsList.length %></span>
+          </li>
+          <% if (notificationsList.length === 0) { %>
+            <li class="p-4 text-center text-muted small">
+              <i class="bi bi-bell-slash fs-4 d-block mb-1"></i>
+              No notifications yet.
+            </li>
+          <% } %>
+          <% notificationsList.forEach(function(n) { %>
+            <li>
+              <a href="<%= n.link || '/consultations' %>" class="dropdown-item p-3 border-bottom <%= n.is_read ? 'text-muted' : 'bg-light-subtle fw-semibold' %>" style="white-space: normal;">
+                <div class="d-flex justify-content-between align-items-start">
+                  <span class="small <%= n.is_read ? 'text-dark' : 'text-primary' %>"><%= n.title %></span>
+                  <span class="text-muted" style="font-size: 0.65rem;"><%= new Date(n.created_at).toLocaleDateString([], {month:'short', day:'numeric'}) %></span>
+                </div>
+                <div class="small text-secondary mt-1" style="font-size: 0.78rem;"><%= n.message %></div>
+              </a>
+            </li>
+          <% }); %>
+        </ul>
+      </div>
+
+      <!-- User Profile Capsule with Depth -->
+      <div class="nav-user-pill d-flex align-items-center gap-2">
+        <i class="bi bi-person-circle fs-5 text-dark"></i>
+        <span class="small fw-bold text-dark"><%= user.full_name %></span>
+        <span class="role-badge-tag"><%= user.role.toUpperCase() %></span>
+      </div>
+
+      <!-- Logout Button -->
+      <a href="/logout" class="nav-logout-btn" title="Sign Out">
+        <i class="bi bi-box-arrow-right"></i>
+      </a>
+    </div>
+
+  </div>
+</header>
+
+<script>
+  // Global Notification Dismissal Engine
+  document.addEventListener('DOMContentLoaded', () => {
+    const bellBtn = document.getElementById('notifBellBtn');
+    const badge = document.getElementById('notifBadge');
+
+    if (bellBtn) {
+      bellBtn.addEventListener('click', () => {
+        if (badge) {
+          badge.remove(); // Instantly remove the red badge from DOM
+        }
+        fetch('/notifications/mark-read', { method: 'POST' })
+          .catch(err => console.error('Error marking notifications read:', err));
+      });
+    }
+  });
+</script>

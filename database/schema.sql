@@ -52,3 +52,32 @@ CREATE TABLE IF NOT EXISTS consultations (
   FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (faculty_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
+-- Student evaluations of completed consultations (used by models/Review.js,
+-- the faculty directory ratings, and the consultation ledger).
+-- One review per consultation, rating must be 1-5.
+CREATE TABLE IF NOT EXISTS consultation_reviews (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  consultation_id INT NOT NULL UNIQUE,
+  faculty_id INT NOT NULL,
+  student_id INT NOT NULL,
+  rating TINYINT NOT NULL,
+  comment TEXT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CHECK (rating BETWEEN 1 AND 5),
+  FOREIGN KEY (consultation_id) REFERENCES consultations(id) ON DELETE CASCADE,
+  FOREIGN KEY (faculty_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- In-app notifications (used by models/Notification.js and the navbar bell).
+CREATE TABLE IF NOT EXISTS notifications (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  title VARCHAR(150) NOT NULL,
+  message TEXT NOT NULL,
+  link VARCHAR(255) NOT NULL DEFAULT '/consultations',
+  is_read BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
