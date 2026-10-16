@@ -1,0 +1,166 @@
+﻿:root {
+  --canvas-bg: #e9eef5;
+  --surface-card: #f4f7fc;
+  --primary-accent: #415993;
+  --primary-hover: #334775;
+  --text-dark: #1e293b;
+  --text-muted: #64748b;
+  --shadow-soft: 8px 8px 18px rgba(166, 180, 200, 0.45), -8px -8px 18px #ffffff;
+  --shadow-inset: inset 2px 2px 5px rgba(166, 180, 200, 0.4), inset -2px -2px 5px #ffffff;
+  --shadow-card: 0 10px 25px rgba(65, 89, 147, 0.08);
+}
+
+html { overflow-y: scroll; }
+body {
+  background-color: var(--canvas-bg);
+  font-family: system-ui, -apple-system, sans-serif;
+  color: var(--text-dark);
+  min-height: 100vh;
+}
+
+/* Floating Capsule Navbar */
+.floating-navbar-container {
+  margin: 18px auto 25px auto;
+  max-width: 1280px;
+  padding: 0 15px;
+}
+.floating-navbar {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 40px;
+  padding: 10px 24px;
+  box-shadow: 0 8px 24px rgba(65, 89, 147, 0.08);
+}
+.nav-brand-pill {
+  background: #f0f4fa;
+  border: 1px solid #dce4ef;
+  border-radius: 20px;
+  padding: 7px 18px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--primary-accent);
+  text-decoration: none;
+}
+.nav-pill-btn {
+  border-radius: 24px;
+  padding: 7px 18px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.nav-pill-btn.active {
+  background-color: var(--primary-accent);
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(65, 89, 147, 0.25);
+}
+.nav-pill-btn:hover:not(.active) {
+  background-color: #f1f5fa;
+  color: var(--primary-accent);
+}
+
+/* User Capsule */
+.nav-user-capsule {
+  background: #f0f4fa;
+  border: 1px solid #dce4ef;
+  border-radius: 24px;
+  padding: 5px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.role-badge-tag {
+  background: var(--primary-accent);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+/* Neumorphic Cards & Hero Banner */
+.hero-banner-soft {
+  background: linear-gradient(135deg, #445f9e 0%, #5773b4 100%);
+  border-radius: 24px;
+  color: #ffffff;
+  padding: 32px 38px;
+  margin-bottom: 25px;
+  box-shadow: 0 12px 28px rgba(65, 89, 147, 0.22);
+}
+.soft-card {
+  background: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 22px;
+  box-shadow: var(--shadow-card);
+}
+
+/* Inset Sunken Form Fields */
+.sunken-input {
+  background-color: #f1f5fa !important;
+  border: 1px solid #dce4ef !important;
+  border-radius: 14px !important;
+  padding: 11px 16px !important;
+  box-shadow: var(--shadow-inset);
+  color: var(--text-dark) !important;
+}
+.sunken-input:focus {
+  outline: none !important;
+  border-color: var(--primary-accent) !important;
+}
+
+/* Primary Button Styling */
+.btn-primary-pill {
+  background-color: var(--primary-accent);
+  color: #ffffff;
+  border-radius: 24px;
+  padding: 9px 22px;
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 4px 14px rgba(65, 89, 147, 0.28);
+  transition: all 0.2s ease;
+}
+.btn-primary-pill:hover {
+  background-color: var(--primary-hover);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Circular Icon Buttons */
+.btn-icon-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+.btn-icon-circle:hover {
+  background: #f1f5fa;
+  color: var(--primary-accent);
+}
+.btn-icon-delete:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+/* Dark Modal System */
+.dark-modal-content {
+  background-color: #27303d;
+  color: #ffffff;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+.dark-modal-input {
+  background-color: #1e2530 !important;
+  border: 1px solid #374151 !important;
+  color: #ffffff !important;
+  border-radius: 12px;
+}

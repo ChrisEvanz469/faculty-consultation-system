@@ -6,158 +6,48 @@
   <title>Faculty Directory - Faculty Consultation Portal</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <style>
-    html { overflow-y: scroll; }
-    body { background-color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; }
-    .hero-banner {
-      background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
-      border-radius: 16px;
-      color: white;
-      padding: 30px 35px;
-      margin-bottom: 25px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 10px 25px rgba(2, 132, 199, 0.2);
-    }
-    .hero-banner::after {
-      content: "";
-      position: absolute;
-      right: -20px;
-      bottom: -40px;
-      width: 220px;
-      height: 220px;
-      background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 70%);
-      border-radius: 50%;
-    }
-    .faculty-card {
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      background: #ffffff;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .faculty-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.06);
-    }
-    .avatar-circle {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background-color: #e0f2fe;
-      color: #0284c7;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-    .next-box {
-      background-color: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 8px 12px;
-    }
-    .role-badge { font-size: 0.68rem; letter-spacing: 0.8px; font-weight: 800; padding: 4px 8px; border-radius: 6px; }
-    .dropdown-menu-notif { width: 320px; max-height: 400px; overflow-y: auto; border-radius: 12px; }
-  </style>
+  <link href="/css/custom.css" rel="stylesheet">
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container">
-      <a class="navbar-brand fw-bold d-flex align-items-center" href="/dashboard">
-        <i class="bi bi-calendar2-check-fill me-2 fs-5"></i> Faculty Consultation Portal
-      </a>
-      <div class="d-flex align-items-center gap-2">
-        <a href="/dashboard" class="btn btn-outline-light btn-sm"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
-        <a href="/faculty" class="btn btn-light btn-sm text-primary fw-semibold"><i class="bi bi-search me-1"></i> Directory</a>
-        <a href="/timetable" class="btn btn-outline-light btn-sm"><i class="bi bi-grid-3x3-gap me-1"></i> Schedule</a>
-        <a href="/consultations" class="btn btn-outline-light btn-sm"><i class="bi bi-journal-text me-1"></i> Appointments</a>
-        
-        <div class="dropdown">
-          <button class="btn btn-outline-light btn-sm position-relative" type="button" id="notifBellBtn" data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
-            <i class="bi bi-bell-fill"></i>
-            <% if (unreadNotifCount > 0) { %>
-              <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                <%= unreadNotifCount %>
-              </span>
-            <% } %>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end shadow-sm dropdown-menu-notif p-0" aria-labelledby="notifBellBtn">
-            <li class="p-3 border-bottom d-flex justify-content-between align-items-center bg-light">
-              <span class="fw-bold small text-dark"><i class="bi bi-bell me-1"></i> Notifications</span>
-              <span class="badge bg-primary rounded-pill"><%= notificationsList.length %></span>
-            </li>
-            <% if (notificationsList.length === 0) { %>
-              <li class="p-4 text-center text-muted small">
-                <i class="bi bi-bell-slash fs-4 d-block mb-1"></i>
-                No notifications yet.
-              </li>
-            <% } %>
-            <% notificationsList.forEach(function(n) { %>
-              <li>
-                <a href="<%= n.link || '/consultations' %>" class="dropdown-item p-3 border-bottom <%= n.is_read ? 'text-muted' : 'bg-light-subtle fw-semibold' %>" style="white-space: normal;">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <span class="small <%= n.is_read ? 'text-dark' : 'text-primary' %>"><%= n.title %></span>
-                    <span class="text-muted" style="font-size: 0.65rem;"><%= new Date(n.created_at).toLocaleDateString([], {month:'short', day:'numeric'}) %></span>
-                  </div>
-                  <div class="small text-secondary mt-1" style="font-size: 0.78rem;"><%= n.message %></div>
-                </a>
-              </li>
-            <% }); %>
-          </ul>
-        </div>
+  <%- include('../partials/navbar', { active: 'directory' }) %>
 
-        <div class="vr bg-white mx-2" style="height: 22px; opacity: 0.35;"></div>
-        
-        <div class="d-flex align-items-center bg-white bg-opacity-10 border border-white border-opacity-25 rounded-pill px-3 py-1 me-1">
-          <i class="bi bi-person-circle text-white me-2 fs-6"></i>
-          <span class="text-white fw-semibold small me-2"><%= user.full_name %></span>
-          <span class="badge <%= user.role === 'faculty' ? 'bg-warning text-dark' : 'bg-white text-primary' %> text-uppercase role-badge">
-            <%= user.role %>
-          </span>
-        </div>
-
-        <a href="/logout" class="btn btn-outline-light btn-sm" title="Logout"><i class="bi bi-box-arrow-right"></i></a>
-      </div>
-    </div>
-  </nav>
-
-  <div class="container my-4">
-    <div class="hero-banner">
-      <div class="small text-uppercase fw-semibold tracking-wide text-light opacity-75 mb-1">
-        <%= greeting %>,
-      </div>
+  <div class="container my-4" style="max-width: 1280px;">
+    <!-- Hero Banner -->
+    <div class="hero-banner-soft">
+      <div class="small text-uppercase fw-semibold tracking-wide text-light opacity-75 mb-1"><%= greeting %>,</div>
       <h2 class="fw-bold mb-1 text-uppercase"><%= user.full_name %></h2>
       <div class="small opacity-90"><i class="bi bi-calendar3 me-1"></i> <%= todayFormatted %></div>
     </div>
 
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
       <div>
         <h4 class="fw-bold text-dark mb-1">Faculty Directory</h4>
         <p class="text-muted small mb-0">Browse faculty members, verify consultation availability, and schedule appointments.</p>
       </div>
       <div>
-        <span class="badge bg-white text-primary border px-3 py-2 rounded-pill shadow-sm">
+        <span class="badge rounded-pill px-3 py-2 text-white" style="background: #415993;">
           <i class="bi bi-people-fill me-1"></i> Total Instructors: <%= facultyList.length %>
         </span>
       </div>
     </div>
 
-    <div class="card border-0 shadow-sm p-3 mb-4 rounded-3">
+    <!-- Inset Sunken Search Bar -->
+    <div class="soft-card p-3 mb-4">
       <div class="row g-2 align-items-center">
-        <div class="col-md-8">
+        <div class="col-md-9">
           <div class="input-group">
-            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-            <input type="text" id="liveSearchInput" class="form-control border-start-0 ps-0" placeholder="Search name, specialization, or office room...">
+            <span class="input-group-text border-0 bg-transparent text-muted ps-3"><i class="bi bi-search"></i></span>
+            <input type="text" id="liveSearchInput" class="form-control sunken-input" placeholder="Search name, specialization, or office room...">
           </div>
         </div>
-        <div class="col-md-4 text-md-end text-muted small">
+        <div class="col-md-3 text-md-end text-muted small pe-3">
           <span id="matchCount"><%= facultyList.length %> instructors shown</span>
         </div>
       </div>
     </div>
 
-    <div class="row g-3" id="facultyCardsContainer">
+    <!-- Faculty Cards Grid -->
+    <div class="row g-4" id="facultyCardsContainer">
       <% facultyList.forEach(function(f) { %>
         <% 
           const initials = (f.full_name || 'Prof')
@@ -171,9 +61,10 @@
              data-name="<%= (f.full_name || '').toLowerCase() %>" 
              data-dept="<%= (f.department || '').toLowerCase() %>"
              data-office="<%= (f.office_location || '').toLowerCase() %>">
-          <div class="card h-100 faculty-card p-3 shadow-sm">
+          <div class="soft-card h-100 p-4 d-flex flex-column">
+            
             <div class="d-flex align-items-center gap-3 mb-3">
-              <div class="avatar-circle">
+              <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold fs-5 text-white" style="width: 52px; height: 52px; background: #415993;">
                 <%= initials %>
               </div>
               <div>
@@ -182,25 +73,26 @@
               </div>
             </div>
 
-            <div class="small text-muted mb-3">
+            <div class="small text-muted mb-3 flex-grow-1">
               <div class="mb-1"><i class="bi bi-building me-1"></i> <%= f.department || 'College of Computer Studies' %></div>
               <div class="mb-1"><i class="bi bi-geo-alt me-1"></i> <%= f.office_location || 'CCS Faculty Lounge' %></div>
               <div><i class="bi bi-envelope me-1"></i> <%= f.email %></div>
             </div>
 
-            <div class="next-box mb-3 d-flex justify-content-between align-items-center">
+            <!-- Next Available Opening Box -->
+            <div class="p-3 rounded-4 mb-3 d-flex justify-content-between align-items-center" style="background: #f1f5fa; border: 1px solid #dce4ef;">
               <div>
-                <div class="text-muted" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase;">Next Available:</div>
-                <div class="fw-semibold text-primary small"><%= f.next_available %></div>
+                <div class="text-muted small fw-bold text-uppercase" style="font-size: 0.68rem;">Next Available:</div>
+                <div class="fw-bold small" style="color: #415993;"><%= f.next_available %></div>
               </div>
-              <a href="/faculty/<%= f.id %>/book" class="btn btn-primary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Book Appointment">
+              <a href="/faculty/<%= f.id %>/book" class="btn btn-icon-circle" style="background: #415993; color: white;" title="Book Appointment">
                 <i class="bi bi-chevron-right"></i>
               </a>
             </div>
 
-            <div class="mt-auto pt-2 border-top d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
               <% if (f.review_count > 0) { %>
-                <span class="small text-warning-emphasis">
+                <span class="small text-dark">
                   <i class="bi bi-star-fill text-warning me-1"></i><strong><%= f.avg_rating %></strong>/5.0
                   <span class="text-muted">(<%= f.review_count %>)</span>
                 </span>
@@ -208,10 +100,11 @@
                 <span class="small text-muted"><i class="bi bi-star me-1"></i>No ratings yet</span>
               <% } %>
 
-              <a href="/faculty/<%= f.id %>/book" class="btn btn-outline-primary btn-sm fw-semibold">
+              <a href="/faculty/<%= f.id %>/book" class="btn btn-primary-pill btn-sm">
                 View Calendar
               </a>
             </div>
+
           </div>
         </div>
       <% }); %>
@@ -241,18 +134,6 @@
       });
       matchCount.textContent = visible + ' instructors shown';
     });
-
-    const notifBtn = document.getElementById('notifBellBtn');
-    const notifBadge = document.getElementById('notifBadge');
-    if (notifBtn) {
-      notifBtn.addEventListener('click', () => {
-        if (notifBadge) {
-          fetch('/notifications/mark-read', { method: 'POST' })
-            .then(() => { notifBadge.style.display = 'none'; })
-            .catch(err => console.error(err));
-        }
-      });
-    }
   </script>
 </body>
 </html>
