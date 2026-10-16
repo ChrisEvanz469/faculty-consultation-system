@@ -7,7 +7,7 @@ A centralized web-based scheduling platform that optimizes academic consultation
 - Cris Ivan M. Nual: System Architecture, Database Schema, Authentication, Session Management
 - Jasmine T. Baldoza: Faculty Directory, Client-side Search, Instructor Booking Profiles
 - April D. Peñones: Consultation Records Ledger, Printable Attendance Slips, Slot Conflict Safeguards
-- Kyle Martirez: Analytics Dashboard, Schedule Matrix View, In-App Notifications, Office Hours Management
+- Kyle Daniel F. Martirez: Analytics Dashboard, Schedule Matrix View, In-App Notifications, Office Hours Management
 
 ## Assigned System 
 
